@@ -25,13 +25,9 @@
                     <h3>{{ name }}</h3>
                 </div>
                 <div class="list-group">
-                    <!-- Nav stuff here -->
-                    <ul class="nav nav-pills nav-stacked">
-                      <li role="presentation"><a href="{% url 'geokey_export:index' %}">List of Exports</a></li>
-                      <li role="presentation" class="active"><a href="{% url 'geokey_export:export_overview' %}">Export Overview</a></li>
-                      <li role="presentation"><a href="{% url 'geokey_export:export_create' %}">Create an Export</a></li>
-                    </ul>
-
+                    <a href="{% url 'geokey_export:index' %}" class="list-group-item">List of Exports</a>
+                    <a href="{% url 'geokey_export:export_overview' %}" class="list-group-item active">Export Overview</a>
+                    <a href="{% url 'geokey_export:export_create' %}" class="list-group-item">Create an Export</a>
                 </div>
             </div>
         </div>
