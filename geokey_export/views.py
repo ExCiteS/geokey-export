@@ -15,6 +15,7 @@ from geokey.categories.models import Category
 
 from .models import Export
 
+
 class IndexPage(LoginRequiredMixin, TemplateView):
     template_name = 'export_index.html'
 
@@ -27,6 +28,7 @@ class IndexPage(LoginRequiredMixin, TemplateView):
             *args,
             **kwargs
         )
+
 
 class ExportCreate(LoginRequiredMixin, TemplateView):
     template_name = 'export_create.html'
@@ -49,7 +51,7 @@ class ExportCreate(LoginRequiredMixin, TemplateView):
         project_id = self.request.POST.get('exportProject')
         project = Project.objects.get_single(self.request.user, project_id)
 
-        #category = self.request.POST.get('exportCategory')
+        # category = self.request.POST.get('exportCategory')
 
         #filter = self.request.POST.get('filter')
 
@@ -72,39 +74,40 @@ class ExportCreate(LoginRequiredMixin, TemplateView):
         export = Export.objects.create(
             name=name,
             project=project,
-            #category=category,
-            #filter=filter,
+            # category=category,
+            # filter=filter,
             isoneoff=isoneoff,
             expiration=expiration,
             urlhash=urlhash,
             creator=creator
         )
 
-        return redirect('geokey_export:export_overview',export_id=export.id )
+        return redirect('geokey_export:export_overview', export_id=export.id)
 
 
-class ExportOverview(LoginRequiredMixin, TemplateView):
+class ExportObjectMixin(object):
+    def get_context_data(self, user, export_id, **kwargs):
+        export = Export.objects.get(pk=export_id)
+
+        if export.creator != user:
+            return {
+                'error_description': 'You must be the creator of the export.',
+                'error': 'Permission denied.'
+            }
+        else:
+            return super(ExportObjectMixin, self).get_context_data(
+                export=export, **kwargs)
+
+
+class ExportOverview(LoginRequiredMixin, ExportObjectMixin, TemplateView):
     template_name = 'export_overview.html'
 
-    def get_context_data(self, export_id):
-        export = Export.objects.get(pk=export_id)
 
-        return {
-            'export': export
-        }
-
-class ExportDelete(LoginRequiredMixin, TemplateView):
+class ExportDelete(LoginRequiredMixin, ExportObjectMixin, TemplateView):
     template_name = 'base.html'
 
-    def get_context_data(self, export_id, **kwargs):
-
-        export = Export.objects.get(pk=export_id)
-        return super(ExportDelete, self).get_context_data(
-            export=export, **kwargs)
-
     def get(self, request, export_id):
-
-        context = self.get_context_data(export_id)
+        context = self.get_context_data(request.user, export_id)
         export = context.pop('export', None)
 
         if export is not None:
@@ -115,17 +118,17 @@ class ExportDelete(LoginRequiredMixin, TemplateView):
 
         return self.render_to_response(context)
 
+
 class ExportToRenderer(LoginRequiredMixin, TemplateView):
     template_name = 'base.html'
 
     def get_context_data(self, urlhash, **kwargs):
         urlhash = urlhash
 
-        return super(ExportKML, self).get_context_data(
+        return super(ExportToRenderer, self).get_context_data(
             urlhash=urlhash, **kwargs)
 
     def get(self, request, urlhash, format=None):
-
         export = Export.objects.get(urlhash=urlhash)
         contributions = export.project.get_all_contributions(export.creator)
         #contributions = export.project.get_all_contributions(export.creator).filter(category=export.category)
