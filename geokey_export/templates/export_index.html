@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %} | Extension: {{ name }}{% endblock %}
+
+{% block main %}
+<div class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6">
+                <h1 class="smaller"><a href="{% url 'geokey_export:index' %}">{{name}}</a></h1>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="container">
+    {% include 'snippets/messages.html' %}
+
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h6 class="item-info">Extension</h6>
+                    <h3>{{ name }}</h3>
+                </div>
+                <div class="list-group">
+                    <!-- Nav stuff here -->
+                    <ul class="nav nav-pills nav-stacked">
+                      <li role="presentation" class="active"><a href="{% url 'geokey_export:index' %}">List of Exports</a></li>
+                      <li role="presentation"><a href="{% url 'geokey_export:export_overview' %}">Export Overview</a></li>
+                      <li role="presentation"><a href="{% url 'geokey_export:export_create' %}">Create an Export</a></li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <!-- Content stuff here -->
+            <ul class="list-unstyled overview-list">
+              {% for export in exports %}
+              <li>
+                <h3><a href="{% url 'geokey_export:export_overview' export.id %}">{{export.name}}</a></h3>
+                <p class="meta">Expiration: <span class="lower-case">
+                  {% if export.isoneoff %}
+                    One Off
+                  {% elif export.expiration %}
+                    {{ export.expiration }}
+                  {% else %}
+                    Permanent
+                  {% endif %}
+                  </span></p>
+              </li>
+              {% endfor %}
+            </ul>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block libraries %}
+
+{% endblock %}

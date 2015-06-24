@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %} | Extension: {{ name }}{% endblock %}
+
+{% block main %}
+<div class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6">
+                <h1 class="smaller"><a href="{% url 'geokey_export:export_create' %}">{{name}}</a></h1>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="container">
+    {% include 'snippets/messages.html' %}
+
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h6 class="item-info">Extension</h6>
+                    <h3>{{ name }}</h3>
+                </div>
+                <div class="list-group">
+                    <!-- Nav stuff here -->
+                    <ul class="nav nav-pills nav-stacked">
+                      <li role="presentation"><a href="{% url 'geokey_export:index' %}">List of Exports</a></li>
+                      <li role="presentation"><a href="{% url 'geokey_export:export_overview' %}">Export Overview</a></li>
+                      <li role="presentation" class="active"><a href="{% url 'geokey_export:export_create' %}">Create an Export</a></li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <!-- Content stuff here -->
+            <form method="POST" action="{% url 'geokey_export:export_create' %}">
+              {% csrf_token %}
+
+              <div class="form-group">
+                <label for="exportName">Name of the Export</p>
+                <input type="text" class="form-control" name="exportName" />
+              </div>
+
+              <div class="form-group">
+                <label for="exportProject">Project</p>
+                <select class="form-control" name="exportProject">
+                  {% for project in projects %}
+                    <option value="{{project.id}}">{{project.name}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="exportCategory">Category</p>
+                <select class="form-control" name="exportCategory">
+                  {% for category in categories %}
+                  <option value="{{category.id}}">{{category.name}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="exportExpiration">Export Length of Availability</p>
+                <select class="form-control" name="exportExpiration">
+                  <option value="one_off">one off</option>
+                  <option value="one_week">one week</option>
+                  <option value="permanent">permanent</option>
+                </select>
+
+              </div>
+
+              <div class="form-group">
+                <button type="submit" name="createExport" class="btn btn-primary">Create Export</button>
+              </div>
+
+          </form>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block libraries %}
+
+{% endblock %}

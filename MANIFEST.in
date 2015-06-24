@@ -1,0 +1,2 @@
+recursive-include geokey_export/templates *
+recursive-include geokey_export/migrations *
