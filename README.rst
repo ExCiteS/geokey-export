@@ -12,6 +12,8 @@ Run tests:
 
 Test Coverage:
 
+.. code-block:: console
+
     coverage run --source=geokey_export manage.py test geokey_export --nocapture --nologcapture
     coverage report -m --omit=*/tests/*,*/migrations/*
 
