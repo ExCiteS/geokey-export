@@ -1,4 +1,6 @@
-import datetime, string, random
+import datetime
+import string
+import random
 
 from django.http import HttpResponse
 from django.views.generic import TemplateView
@@ -40,12 +42,10 @@ class ExportCreate(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         projects = Project.objects.get_list(self.request.user)
-        categories = Category.objects.get_list(self.request.user, 5) #will need to be dynamic or removed...
 
         return super(ExportCreate, self).get_context_data(
             name='GeoKey Export',
             projects=projects,
-            categories=categories,
             *args,
             **kwargs
         )
@@ -58,7 +58,7 @@ class ExportCreate(LoginRequiredMixin, TemplateView):
 
         # category = self.request.POST.get('exportCategory')
 
-        #filter = self.request.POST.get('filter')
+        # filter = self.request.POST.get('filter')
 
         expiration_val = self.request.POST.get('exportExpiration')
         isoneoff = False
@@ -89,14 +89,16 @@ class ExportCreate(LoginRequiredMixin, TemplateView):
 
         return redirect('geokey_export:export_overview', export_id=export.id)
 
+
 class ExportCreateUpdateCategories(LoginRequiredMixin, APIView):
     @handle_exceptions_for_ajax
     def get(self, request, project_id):
         categories = Category.objects.get_list(self.request.user, project_id)
         categories_dict = {}
+
         for category in categories:
             categories_dict[category.id] = category.name
-        
+
         return Response(categories_dict)
 
 
@@ -154,8 +156,8 @@ class ExportToRenderer(LoginRequiredMixin, TemplateView):
     def get(self, request, urlhash, format=None):
         export = Export.objects.get(urlhash=urlhash)
         contributions = export.project.get_all_contributions(export.creator)
-        #contributions = export.project.get_all_contributions(export.creator).filter(category=export.category)
-        #Tests: views
+        # contributions = export.project.get_all_contributions(export.creator).filter(category=export.category)
+        # Tests: views
 
         serializer = ContributionSerializer(
             contributions,
@@ -172,7 +174,7 @@ class ExportToRenderer(LoginRequiredMixin, TemplateView):
 
         if renderer:
             content = renderer.render(serializer.data)
-            #print content
+            # print content
         else:
             pass
             # return response sayiner format not supported

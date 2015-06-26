@@ -9,27 +9,26 @@
  * ***********************************************/
 
  $(function() {
-     'use strict';
+    'use strict';
 
-     $('select[name=exportProject]').on('change', function() {
+    var categorySelect = $('select[name=exportCategory]');
 
-       var selected_project_id = $('select[name=exportProject]').find(':selected').val();
+    $('select[name=exportProject]').on('change', function () {
+        var selectedProjectId = $(this).val();
 
-       $.get('/admin/export/create/' + selected_project_id, function(new_categories){
+        categorySelect.find('option').each(function () {
+            if ($(this).val() !== '') {
+                $(this).remove();
+            }
+        });
 
-         var categorySelect = $('select[name=exportCategory]');
-         categorySelect.empty();
+        $.get('/admin/export/create/' + selectedProjectId, function (categories) {
+            var id;
 
-         alert(typeof(new_categories));
-
-         for(var i = 0, len = new_categories.length; i < len; i++)
-         {
-           alert(i);
-           //categorySelect.append($('<option value="' + new_categories.key + '">' + new_categories.val + '</option>'));
-         }
-
-       });
-
+            for (id in categories) {
+                categorySelect.append($('<option value="' + id + '">' + categories[id] + '</option>'));
+            }
+        });
      });
 
  });
