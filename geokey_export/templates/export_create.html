@@ -36,13 +36,13 @@
               {% csrf_token %}
 
               <div class="form-group">
-                <label for="exportName" class="control-label">Name of the Export</label>
-                <input type="text" class="form-control input-lg" name="exportName">
+                <label for="exportName" class="control-label">Name of the Export (required)</label>
+                <input type="text" class="form-control input-lg" name="exportName" required>
               </div>
 
               <div class="form-group">
-                <label for="exportProject" class="control-label">Project</label>
-                <select class="form-control input-lg" name="exportProject">
+                <label for="exportProject" class="control-label">Project (required)</label>
+                <select class="form-control input-lg" name="exportProject" required>
                   {% for project in projects %}
                     <option value="{{project.id}}">{{project.name}}</option>
                   {% endfor %}
@@ -50,8 +50,8 @@
               </div>
 
               <div class="form-group">
-                <label for="exportCategory" class="control-label">Category</label>
-                <select class="form-control input-lg" name="exportCategory">
+                <label for="exportCategory" class="control-label">Category (required)</label>
+                <select class="form-control input-lg" name="exportCategory" required1>
                   {% for category in categories %}
                   <option value="{{category.id}}">{{category.name}}</option>
                   {% endfor %}
@@ -59,8 +59,8 @@
               </div>
 
               <div class="form-group">
-                <label for="exportExpiration" class="control-label">Export Length of Availability</label>
-                <select class="form-control input-lg" name="exportExpiration">
+                <label for="exportExpiration" class="control-label">Export Length of Availability (required)</label>
+                <select class="form-control input-lg" name="exportExpiration" required>
                   <option value="one_off">one off</option>
                   <option value="one_week">one week</option>
                   <option value="permanent">permanent</option>
@@ -80,5 +80,6 @@
 {% endblock %}
 
 {% block libraries %}
+<script src="/static/js/admin.ui.forms.validate.js"></script>
   <script src="/static/js/admin.ui.export.create.js"></script>
 {% endblock %}
