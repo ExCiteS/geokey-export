@@ -31,14 +31,10 @@
             </div>
         </div>
         <div class="col-sm-8">
-            <!-- Content stuff here -->
-            {% if export %}
             <p>Name: {{export.name}}</p>
             <p>Project: {{export.project.name}}</p>
             <p>Creator: {{export.creator}}</p>
             <p>KML: <a href="{% url 'geokey_export:export_to_renderer' export.urlhash %}.kml">{{export.urlhash}}.kml</a> </p>
-            {% endif %}
-
         </div>
     </div>
 </div>
