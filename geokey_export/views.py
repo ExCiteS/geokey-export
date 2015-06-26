@@ -99,35 +99,30 @@ class ExportCreateUpdateCategories(LoginRequiredMixin, APIView):
         
         return Response(categories_dict)
 
+
 class ExportObjectMixin(object):
-    def get_context_data(self, user, export_id, **kwargs):
-        export = Export.objects.get(pk=export_id)
-        if export.creator != user:
-            return {
-                'error_description': 'You must be the creator of the export.',
-                'error': 'Permission denied.'
-            }
-        else:
-            return super(ExportObjectMixin, self).get_context_data(
-                export=export, **kwargs)
-
-# Had to add this method in order to deal with ExportOverview not passing user,
-# but ExportDelete does and requires it. Need to sort soon...
-class ExportObjectMixin1(object):
     def get_context_data(self, export_id, **kwargs):
-        export = Export.objects.get(pk=export_id)
-        user = self.request.user
-        if export.creator != user:
+        try:
+            export = Export.objects.get(pk=export_id)
+
+            if export.creator != self.request.user:
+                return {
+                    'error_description': 'You must be creator of the export.',
+                    'error': 'Permission denied.'
+                }
+            else:
+                return super(ExportObjectMixin, self).get_context_data(
+                    export=export,
+                    **kwargs
+                )
+        except Export.DoesNotExist:
             return {
-                'error_description': 'You must be the creator of the export.',
-                'error': 'Permission denied.'
+                'error_description': 'Export not found.',
+                'error': 'Not found.'
             }
-        else:
-            return super(ExportObjectMixin1, self).get_context_data(
-                export=export, **kwargs)
 
 
-class ExportOverview(LoginRequiredMixin, ExportObjectMixin1, TemplateView):
+class ExportOverview(LoginRequiredMixin, ExportObjectMixin, TemplateView):
     template_name = 'export_overview.html'
 
 
@@ -135,7 +130,7 @@ class ExportDelete(LoginRequiredMixin, ExportObjectMixin, TemplateView):
     template_name = 'base.html'
 
     def get(self, request, export_id):
-        context = self.get_context_data(request.user, export_id)
+        context = self.get_context_data(export_id)
         export = context.pop('export', None)
 
         if export is not None:
