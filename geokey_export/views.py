@@ -5,13 +5,18 @@ from django.views.generic import TemplateView
 from django.shortcuts import redirect
 from django.contrib import messages
 
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from braces.views import LoginRequiredMixin
 
+from geokey.categories.models import Category
 from geokey.contributions.serializers import ContributionSerializer
 from geokey.contributions.renderer.geojson import GeoJsonRenderer
 from geokey.contributions.renderer.kml import KmlRenderer
+from geokey.core.decorators import handle_exceptions_for_ajax
 from geokey.projects.models import Project
-from geokey.categories.models import Category
+
 
 from .models import Export
 
@@ -84,11 +89,19 @@ class ExportCreate(LoginRequiredMixin, TemplateView):
 
         return redirect('geokey_export:export_overview', export_id=export.id)
 
+class ExportCreateUpdateCategories(LoginRequiredMixin, APIView):
+    @handle_exceptions_for_ajax
+    def get(self, request, project_id):
+        categories = Category.objects.get_list(self.request.user, project_id)
+        categories_dict = {}
+        for category in categories:
+            categories_dict[category.id] = category.name
+        
+        return Response(categories_dict)
 
 class ExportObjectMixin(object):
     def get_context_data(self, user, export_id, **kwargs):
         export = Export.objects.get(pk=export_id)
-
         if export.creator != user:
             return {
                 'error_description': 'You must be the creator of the export.',
@@ -98,8 +111,23 @@ class ExportObjectMixin(object):
             return super(ExportObjectMixin, self).get_context_data(
                 export=export, **kwargs)
 
+# Had to add this method in order to deal with ExportOverview not passing user,
+# but ExportDelete does and requires it. Need to sort soon...
+class ExportObjectMixin1(object):
+    def get_context_data(self, export_id, **kwargs):
+        export = Export.objects.get(pk=export_id)
+        user = self.request.user
+        if export.creator != user:
+            return {
+                'error_description': 'You must be the creator of the export.',
+                'error': 'Permission denied.'
+            }
+        else:
+            return super(ExportObjectMixin1, self).get_context_data(
+                export=export, **kwargs)
 
-class ExportOverview(LoginRequiredMixin, ExportObjectMixin, TemplateView):
+
+class ExportOverview(LoginRequiredMixin, ExportObjectMixin1, TemplateView):
     template_name = 'export_overview.html'
 
 

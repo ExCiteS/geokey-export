@@ -3,7 +3,7 @@ from django.conf.urls import patterns, include, url
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from views import  (
-    IndexPage, ExportOverview, ExportCreate, ExportDelete, ExportToRenderer
+    IndexPage, ExportOverview, ExportCreate, ExportDelete, ExportToRenderer, ExportCreateUpdateCategories
 )
 
 datapatterns = patterns(
@@ -39,6 +39,10 @@ urlpatterns = patterns(
         r'^admin/export/create/$',
         ExportCreate.as_view(),
         name='export_create'),
+    url(
+        r'^admin/export/create/(?P<project_id>[0-9]+)/$',
+        ExportCreateUpdateCategories.as_view(),
+        name='export_create_update_categories'),
     url(
         r'^', include(datapatterns))
 )

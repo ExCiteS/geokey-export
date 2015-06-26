@@ -26,7 +26,6 @@
                 </div>
                 <div class="list-group">
                     <a href="{% url 'geokey_export:index' %}" class="list-group-item">List of Exports</a>
-                    <a href="{% url 'geokey_export:export_overview' %}" class="list-group-item">Export Overview</a>
                     <a href="{% url 'geokey_export:export_create' %}" class="list-group-item active">Create an Export</a>
                 </div>
             </div>
@@ -81,5 +80,5 @@
 {% endblock %}
 
 {% block libraries %}
-
+  <script src="/static/js/admin.ui.export.create.js"></script>
 {% endblock %}
