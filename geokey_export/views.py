@@ -1,11 +1,10 @@
-import datetime, string, random
+import datetime, json, random, string
 
 from django.http import HttpResponse
 from django.views.generic import TemplateView
 from django.shortcuts import redirect
 from django.contrib import messages
 
-from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from braces.views import LoginRequiredMixin
@@ -17,9 +16,7 @@ from geokey.contributions.renderer.kml import KmlRenderer
 from geokey.core.decorators import handle_exceptions_for_ajax
 from geokey.projects.models import Project
 
-
 from .models import Export
-
 
 class IndexPage(LoginRequiredMixin, TemplateView):
     template_name = 'export_index.html'
@@ -40,7 +37,13 @@ class ExportCreate(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         projects = Project.objects.get_list(self.request.user)
-        categories = Category.objects.get_list(self.request.user, 5) #will need to be dynamic or removed...
+        first_project_id = None
+        for project in projects:
+            first_project_id = project.id
+            break
+
+        if first_project_id is not None:
+            categories = Category.objects.get_list(self.request.user, first_project_id)
 
         return super(ExportCreate, self).get_context_data(
             name='GeoKey Export',
@@ -56,7 +59,8 @@ class ExportCreate(LoginRequiredMixin, TemplateView):
         project_id = self.request.POST.get('exportProject')
         project = Project.objects.get_single(self.request.user, project_id)
 
-        # category = self.request.POST.get('exportCategory')
+        category_id = self.request.POST.get('exportCategory')
+        category = Category.objects.get_single(self.request.user, project_id, category_id)
 
         #filter = self.request.POST.get('filter')
 
@@ -79,7 +83,7 @@ class ExportCreate(LoginRequiredMixin, TemplateView):
         export = Export.objects.create(
             name=name,
             project=project,
-            # category=category,
+            category=category,
             # filter=filter,
             isoneoff=isoneoff,
             expiration=expiration,
@@ -96,8 +100,8 @@ class ExportCreateUpdateCategories(LoginRequiredMixin, APIView):
         categories_dict = {}
         for category in categories:
             categories_dict[category.id] = category.name
-        
-        return Response(categories_dict)
+
+        return HttpResponse(json.dumps(categories_dict))
 
 class ExportObjectMixin(object):
     def get_context_data(self, user, export_id, **kwargs):
@@ -158,9 +162,8 @@ class ExportToRenderer(LoginRequiredMixin, TemplateView):
 
     def get(self, request, urlhash, format=None):
         export = Export.objects.get(urlhash=urlhash)
-        contributions = export.project.get_all_contributions(export.creator)
-        #contributions = export.project.get_all_contributions(export.creator).filter(category=export.category)
-        #Tests: views
+        contributions = export.project.get_all_contributions(export.creator).filter(category=export.category)
+        # perhaps we want to alert the user when there are no contributions?
 
         serializer = ContributionSerializer(
             contributions,
@@ -177,9 +180,8 @@ class ExportToRenderer(LoginRequiredMixin, TemplateView):
 
         if renderer:
             content = renderer.render(serializer.data)
-            #print content
         else:
             pass
-            # return response sayiner format not supported
+            # return response that format is not supported
 
         return HttpResponse(content, content_type="text/plain")

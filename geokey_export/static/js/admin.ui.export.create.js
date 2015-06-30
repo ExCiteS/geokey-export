@@ -20,12 +20,14 @@
          var categorySelect = $('select[name=exportCategory]');
          categorySelect.empty();
 
-         alert(typeof(new_categories));
+         var new_categories_p = $.parseJSON(new_categories);
 
-         for(var i = 0, len = new_categories.length; i < len; i++)
+         for(var key in new_categories_p)
          {
-           alert(i);
-           //categorySelect.append($('<option value="' + new_categories.key + '">' + new_categories.val + '</option>'));
+           if(new_categories_p.hasOwnProperty(key))
+           {
+             categorySelect.append($('<option value="' + key + '">' + new_categories_p[key] + '</option>'));
+           }
          }
 
        });
