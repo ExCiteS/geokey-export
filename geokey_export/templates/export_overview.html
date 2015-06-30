@@ -10,7 +10,6 @@
                 <h1 class="smaller"><a href="{% url 'geokey_export:export_overview' %}">{{name}}</a></h1>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -31,31 +30,27 @@
             </div>
         </div>
         <div class="col-sm-8">
-            <!-- Content stuff here -->
-            {% if export %}
             <p>Name: {{export.name}}</p>
             <p>Project: {{export.project.name}}</p>
             <p>Category: {{export.category.name}}</p>
             <p>Creator: {{export.creator}}</p>
             <p>Expiration: {{export.expiration}}</p>
             <p>KML: <a href="{% url 'geokey_export:export_to_renderer' export.urlhash %}.kml">{{export.urlhash}}.kml</a> </p>
-            {% endif %}
-
         </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="col-sm-7 col-sm-offset-5">
-        <div class="panel panel-danger">
-            <div class="panel-heading">
-                <h2 class="panel-title">Be careful!</h2>
-            </div>
-            <div class="panel-body becareful">
-                <div>
-                    <strong>Delete export</strong>
-                    <p>If you delete the export there's no way back.</p>
-                    <a href="#" class="text-danger" data-toggle="modal" data-target="#delete-confirm">Delete this export</a>
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-4">
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Be careful!</h2>
+                </div>
+                <div class="panel-body becareful">
+                    <div>
+                        <strong>Delete export</strong>
+                        <p>If you delete the export there's no way back.</p>
+                        <a href="#" class="text-danger" data-toggle="modal" data-target="#delete-confirm">Delete this export</a>
+                    </div>
                 </div>
             </div>
         </div>
