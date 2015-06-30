@@ -22,30 +22,24 @@
             }
         });
 
-<<<<<<< HEAD
-         var categorySelect = $('select[name=exportCategory]');
-         categorySelect.empty();
+        if(selectedProjectId)
+        {
+          $.get('/admin/export/create/' + selectedProjectId, function (new_categories) {
+            if(new_categories)
+            {
+              var new_categories_p = $.parseJSON(new_categories);
 
-         var new_categories_p = $.parseJSON(new_categories);
-
-         for(var key in new_categories_p)
-         {
-           if(new_categories_p.hasOwnProperty(key))
-           {
-             categorySelect.append($('<option value="' + key + '">' + new_categories_p[key] + '</option>'));
-           }
-         }
-
-       });
-=======
-        $.get('/admin/export/create/' + selectedProjectId, function (categories) {
-            var id;
->>>>>>> origin/master
-
-            for (id in categories) {
-                categorySelect.append($('<option value="' + id + '">' + categories[id] + '</option>'));
+              for(var key in new_categories_p)
+              {
+                if(new_categories_p.hasOwnProperty(key))
+                {
+                  categorySelect.append($('<option value="' + key + '">' + new_categories_p[key] + '</option>'));
+                }
+               }
             }
-        });
+         });
+        }
+
      });
 
  });

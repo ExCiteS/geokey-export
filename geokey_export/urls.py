@@ -29,10 +29,6 @@ urlpatterns = patterns(
         IndexPage.as_view(),
         name='index'),
     url(
-        r'^admin/export/overview/$',
-        ExportOverview.as_view(),
-        name='export_overview'),
-    url(
         r'^admin/export/overview/(?P<export_id>[0-9]+)/$',
         ExportOverview.as_view(),
         name='export_overview'),
