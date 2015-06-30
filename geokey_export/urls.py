@@ -2,8 +2,13 @@ from django.conf.urls import patterns, include, url
 
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from views import  (
-    IndexPage, ExportOverview, ExportCreate, ExportDelete, ExportToRenderer, ExportCreateUpdateCategories
+from views import (
+    IndexPage,
+    ExportOverview,
+    ExportCreate,
+    ExportDelete,
+    ExportToRenderer,
+    ExportCreateUpdateCategories
 )
 
 datapatterns = patterns(
