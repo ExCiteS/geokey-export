@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load export_tags %}
+
 {% block title %} | Extension: {{ name }}{% endblock %}
 
 {% block main %}
@@ -36,7 +38,7 @@
                 <tr><td>Project</td><td>{{export.project.name}}</td></tr>
                 <tr><td>Category</td><td>{{export.category.name}}</td></tr>
                 <tr><td>Creator</td><td>{{export.creator}}</td></tr>
-                <tr><td>Expiration date</td><td>{{export.expiration}}</td></tr>
+                <tr><td>Expiration date</td><td>{{ export|expiry }}</td></tr>
             </table>
 
             <h4>Download Links</h4>

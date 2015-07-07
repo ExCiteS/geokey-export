@@ -47,7 +47,7 @@ class ExportDeleteTest(TestCase):
         rendered = render_to_string(
             'base.html',
             {
-                'error_description': 'You must be the creator of the export.',
+                'error_description': 'You must be creator of the export.',
                 'error': 'Permission denied.',
                 'user': user,
                 'PLATFORM_NAME': get_current_site(self.request).name

@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load export_tags %}
+
 {% block title %} | Extension: {{ name }}{% endblock %}
 
 {% block main %}
@@ -40,15 +42,7 @@
                 {% for export in exports %}
                 <li>
                     <h3><a href="{% url 'geokey_export:export_overview' export.id %}">{{export.name}}</a></h3>
-                    <p class="meta">Expiration: <span class="lower-case">
-                    {% if export.isoneoff %}
-                    One Off
-                    {% elif export.expiration %}
-                    {{ export.expiration }}
-                    {% else %}
-                    Permanent
-                    {% endif %}
-                    </span></p>
+                    <p class="meta">Expiration: {{ export|expiry }}</p>
                 </li>
                 {% empty %}
                 <div class="well empty-list">
