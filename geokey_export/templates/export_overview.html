@@ -20,22 +20,30 @@
         <div class="col-sm-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h6 class="item-info">Extension</h6>
-                    <h3>{{ name }}</h3>
+                    <h6 class="item-info">Export</h6>
+                    <h3>{{ export.name }}</h3>
                 </div>
                 <div class="list-group">
-                    <a href="{% url 'geokey_export:index' %}" class="list-group-item">List of Exports</a>
-                    <a href="{% url 'geokey_export:export_create' %}" class="list-group-item">Create an Export</a>
+                    <a href="{% url 'geokey_export:index' %}" class="list-group-item active">Manage your Exports</a>
+                    <a href="{% url 'geokey_export:export_create' %}" class="list-group-item">Create new Export</a>
                 </div>
             </div>
         </div>
         <div class="col-sm-8">
-            <p>Name: {{export.name}}</p>
-            <p>Project: {{export.project.name}}</p>
-            <p>Category: {{export.category.name}}</p>
-            <p>Creator: {{export.creator}}</p>
-            <p>Expiration: {{export.expiration}}</p>
-            <p>KML: <a href="{% url 'geokey_export:export_to_renderer' export.urlhash %}.kml">{{export.urlhash}}.kml</a> </p>
+            <h3>Export <em>{{ export.name }}</em></h3>
+            <table class="table table-hover">
+                <tr><td>Name</td><td>{{export.name}}</td></tr>
+                <tr><td>Project</td><td>{{export.project.name}}</td></tr>
+                <tr><td>Category</td><td>{{export.category.name}}</td></tr>
+                <tr><td>Creator</td><td>{{export.creator}}</td></tr>
+                <tr><td>Expiration date</td><td>{{export.expiration}}</td></tr>
+            </table>
+
+            <h4>Download Links</h4>
+            <table class="table table-hover">
+                <tr><td>KML</td><td><a href="{% url 'geokey_export:export_to_renderer' export.urlhash %}.kml">{{export.urlhash}}.kml</a></td></tr>
+                <tr><td>GeoJSON</td><td><a href="{% url 'geokey_export:export_to_renderer' export.urlhash %}.json">{{export.urlhash}}.json</a></td></tr>
+            </table>
         </div>
     </div>
 

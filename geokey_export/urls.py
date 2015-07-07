@@ -18,7 +18,6 @@ datapatterns = patterns(
         ExportToRenderer.as_view(),
         name='export_to_renderer')
 )
-
 datapatterns = format_suffix_patterns(datapatterns, allowed=['json', 'kml'])
 
 
