@@ -14,7 +14,7 @@ from views import (
 datapatterns = patterns(
     '',
     url(
-        r'^admin/export/overview/(?P<urlhash>[\w-]+)$',
+        r'^admin/export/(?P<urlhash>[\w-]+)$',
         ExportToRenderer.as_view(),
         name='export_to_renderer')
 )
@@ -28,11 +28,11 @@ urlpatterns = patterns(
         IndexPage.as_view(),
         name='index'),
     url(
-        r'^admin/export/overview/(?P<export_id>[0-9]+)/$',
+        r'^admin/export/(?P<export_id>[0-9]+)/$',
         ExportOverview.as_view(),
         name='export_overview'),
     url(
-        r'^admin/export/overview/(?P<export_id>[0-9]+)/delete/$',
+        r'^admin/export/(?P<export_id>[0-9]+)/delete/$',
         ExportDelete.as_view(),
         name='export_delete'),
     url(
