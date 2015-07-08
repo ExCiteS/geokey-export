@@ -39,13 +39,15 @@
                 <tr><td>Category</td><td>{{export.category.name}}</td></tr>
                 <tr><td>Creator</td><td>{{export.creator}}</td></tr>
                 <tr><td>Expiration date</td><td>{{ export|expiry }}</td></tr>
+                <tr><td>Share link</td><td>
+                    {% if export.is_expired %}
+                    <span class="text-danger"><strong>The export is expired.</strong></span>
+                    {% else %}
+                    <a href="{% url 'geokey_export:export_to_renderer' export.urlhash %}">{{export.urlhash}}</a>
+                    {% endif %}
+                </td></tr>
             </table>
 
-            <h4>Download Links</h4>
-            <table class="table table-hover">
-                <tr><td>KML</td><td><a href="{% url 'geokey_export:export_to_renderer' export.urlhash %}.kml">{{export.urlhash}}.kml</a></td></tr>
-                <tr><td>GeoJSON</td><td><a href="{% url 'geokey_export:export_to_renderer' export.urlhash %}.json">{{export.urlhash}}.json</a></td></tr>
-            </table>
         </div>
     </div>
 

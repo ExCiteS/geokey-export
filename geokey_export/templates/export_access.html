@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% load export_tags %}
+
+{% block title %} | Extension: GeoKey Export{% endblock %}
+
+{% block main %}
+<div class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6">
+                <h1 class="smaller"><a href="{% url 'geokey_export:index' %}">GeoKey Export</a></h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    {% include 'snippets/messages.html' %}
+
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h6 class="item-info">Extension</h6>
+                    <h3>GeoKey Export</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <h3 class="header">Export <em>{{ export.name }}</em></h3>
+
+            <h4>Select the format you want to download</h4>
+            <table class="table table-hover">
+                <tr><td>KML</td><td><a href="{% url 'geokey_export:export_to_renderer' export.urlhash %}.kml">{{export.urlhash}}.kml</a></td></tr>
+                <tr><td>GeoJSON</td><td><a href="{% url 'geokey_export:export_to_renderer' export.urlhash %}.json">{{export.urlhash}}.json</a></td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+{% endblock %}
+
+{% block libraries %}
+{% endblock %}

@@ -4,9 +4,11 @@ import string
 import random
 
 from django.http import HttpResponse
-from django.views.generic import TemplateView
+from django.views.generic import View, TemplateView
 from django.shortcuts import redirect
 from django.contrib import messages
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
 
 from rest_framework.views import APIView
 
@@ -152,37 +154,57 @@ class ExportDelete(LoginRequiredMixin, ExportObjectMixin, TemplateView):
         return self.render_to_response(context)
 
 
-class ExportToRenderer(LoginRequiredMixin, TemplateView):
-    template_name = 'base.html'
+class ExportToRenderer(View):
+    def get_context(self, request, urlhash):
+        context = {
+            'PLATFORM_NAME': get_current_site(self.request).name,
+            'user': request.user
+        }
 
-    def get_context_data(self, urlhash, **kwargs):
-        urlhash = urlhash
+        error_context = context.copy()
+        error_context.update({
+            'error_description': 'The export was not found in the database.',
+            'error': 'Not found.'
+        })
 
-        return super(ExportToRenderer, self).get_context_data(
-            urlhash=urlhash, **kwargs)
+        try:
+            export = Export.objects.get(urlhash=urlhash)
+        except Export.DoesNotExist:
+            context = error_context
+        else:
+            if export.is_expired():
+                context = error_context
+            else:
+                context['export'] = export
+
+        return context
 
     def get(self, request, urlhash, format=None):
-        export = Export.objects.get(urlhash=urlhash)
-        contributions = export.project.get_all_contributions(export.creator).filter(category=export.category)
-        # perhaps we want to alert the user when there are no contributions?
+        context = self.get_context(request, urlhash)
+        export = context.get('export')
 
-        serializer = ContributionSerializer(
-            contributions,
-            many=True,
-            context={'user': export.creator, 'project': export.project}
-        )
+        if export and format:
+            content_type = 'text/plain'
 
-        if format == 'json':
-            renderer = GeoJsonRenderer()
-        elif format == 'kml':
-            renderer = KmlRenderer()
-        else:
-            renderer = None
+            if format == 'json':
+                renderer = GeoJsonRenderer()
+            elif format == 'kml':
+                renderer = KmlRenderer()
 
-        if renderer:
+            contributions = export.project.get_all_contributions(
+                export.creator).filter(category=export.category)
+
+            serializer = ContributionSerializer(
+                contributions,
+                many=True,
+                context={'user': export.creator, 'project': export.project}
+            )
             content = renderer.render(serializer.data)
-        else:
-            pass
-            # return response that format is not supported
 
-        return HttpResponse(content, content_type="text/plain")
+            if export.isoneoff:
+                export.expire()
+        else:
+            content = render_to_string('export_access.html', context)
+            content_type = 'text/html'
+
+        return HttpResponse(content, content_type=content_type)
