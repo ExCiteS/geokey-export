@@ -1,5 +1,8 @@
+from django.utils import timezone
+
 from django.db import models
 from django.conf import settings
+
 
 class Export(models.Model):
     """
@@ -12,4 +15,13 @@ class Export(models.Model):
     expiration = models.DateTimeField(null=True)
     urlhash = models.CharField(max_length=40)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL)
-    #filter = ?
+
+    def is_expired(self):
+        if self.expiration:
+            return self.expiration < timezone.now()
+
+        return False
+
+    def expire(self):
+        self.expiration = timezone.now()
+        self.save()
