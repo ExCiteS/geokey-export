@@ -46,4 +46,16 @@ Then, link the URLs into `urls.py`:
         url(r'^', include('geokey_export.urls', namespace='geokey_export')),
     )
 
+Migrate the models into the database:
+
+.. code-block:: console
+
+    python manage.py migrate
+
+Copy static files:
+
+.. code-block:: console
+
+    python manage.py collectstatic
+
 You're ready to go now.
