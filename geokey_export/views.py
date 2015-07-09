@@ -28,7 +28,7 @@ class IndexPage(LoginRequiredMixin, TemplateView):
     template_name = 'export_index.html'
 
     def get_context_data(self, *args, **kwargs):
-        exports = Export.objects.all()
+        exports = Export.objects.filter(creator=self.request.user)
 
         return super(IndexPage, self).get_context_data(
             name='GeoKey Export',
@@ -50,7 +50,10 @@ class ExportCreate(LoginRequiredMixin, TemplateView):
             break
 
         if first_project_id is not None:
-            categories = Category.objects.get_list(self.request.user, first_project_id)
+            categories = Category.objects.get_list(
+                self.request.user,
+                first_project_id
+            )
 
         return super(ExportCreate, self).get_context_data(
             name='GeoKey Export',
@@ -66,7 +69,11 @@ class ExportCreate(LoginRequiredMixin, TemplateView):
         project = Project.objects.get_single(self.request.user, project_id)
 
         category_id = self.request.POST.get('exportCategory')
-        category = Category.objects.get_single(self.request.user, project_id, category_id)
+        category = Category.objects.get_single(
+            self.request.user,
+            project_id,
+            category_id
+        )
 
         # filter = self.request.POST.get('filter')
 
@@ -80,10 +87,16 @@ class ExportCreate(LoginRequiredMixin, TemplateView):
 
         creator = self.request.user
 
-        urlhash = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(40)])
+        urlhash = ''.join([
+            random.choice(string.ascii_letters + string.digits)
+            for n in xrange(40)
+        ])
         export_check = Export.objects.filter(urlhash=urlhash).exists()
         while export_check:
-            urlhash = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(40)])
+            urlhash = ''.join([
+                random.choice(string.ascii_letters + string.digits)
+                for n in xrange(40)
+            ])
             export_check = Export.objects.filter(urlhash=urlhash).exists()
 
         export = Export.objects.create(
