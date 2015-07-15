@@ -1,2 +1,3 @@
 recursive-include geokey_export/templates *
+recursive-include geokey_export/templatetags *
 recursive-include geokey_export/migrations *
