@@ -13,6 +13,7 @@ from .model_factories import ExportFactory
 
 
 class ExportDeleteTest(TestCase):
+
     def setUp(self):
         self.view = ExportDelete.as_view()
         self.request = HttpRequest()

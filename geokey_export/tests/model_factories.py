@@ -7,6 +7,7 @@ from ..models import Export
 
 
 class ExportFactory(factory.django.DjangoModelFactory):
+
     class Meta:
         model = Export
 

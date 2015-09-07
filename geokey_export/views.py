@@ -114,6 +114,7 @@ class ExportCreate(LoginRequiredMixin, TemplateView):
 
 
 class ExportCreateUpdateCategories(LoginRequiredMixin, APIView):
+
     @handle_exceptions_for_ajax
     def get(self, request, project_id):
         categories = Category.objects.get_list(self.request.user, project_id)
@@ -126,6 +127,7 @@ class ExportCreateUpdateCategories(LoginRequiredMixin, APIView):
 
 
 class ExportObjectMixin(object):
+
     def get_context_data(self, export_id, **kwargs):
         try:
             export = Export.objects.get(pk=export_id)
@@ -168,6 +170,7 @@ class ExportDelete(LoginRequiredMixin, ExportObjectMixin, TemplateView):
 
 
 class ExportToRenderer(View):
+
     def get_context(self, request, urlhash):
         context = {
             'PLATFORM_NAME': get_current_site(self.request).name,

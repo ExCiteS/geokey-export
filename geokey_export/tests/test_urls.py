@@ -5,6 +5,7 @@ from ..views import ExportDelete
 
 
 class UrlTest(TestCase):
+
     def test_delete_export(self):
         self.assertEqual(
             reverse('geokey_export:export_delete', kwargs={'export_id': 1}),

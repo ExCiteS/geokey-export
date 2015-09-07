@@ -6,6 +6,7 @@ from .model_factories import ExportFactory
 
 
 class TemplateTagsTest(TestCase):
+
     def test_is_expired(self):
         export = Export(expiration=timezone.now())
         self.assertTrue(export.is_expired())

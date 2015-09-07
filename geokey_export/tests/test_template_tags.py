@@ -6,6 +6,7 @@ from ..models import Export
 
 
 class TemplateTagsTest(TestCase):
+
     def test_expiry(self):
         export = Export(isoneoff=True)
         self.assertEqual(export_tags.expiry(export), 'One off')
