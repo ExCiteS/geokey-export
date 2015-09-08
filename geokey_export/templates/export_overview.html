@@ -41,7 +41,7 @@
                 <tr><td>Expiration date</td><td>{{ export|expiry }}</td></tr>
                 <tr><td>Share link</td><td>
                     {% if export.is_expired %}
-                    <span class="text-danger"><strong>The export is expired.</strong></span>
+                    <span class="text-danger"><strong>The export is expired</strong> | <a href="#" data-toggle="modal" data-target="#reactivate">Reactivate</a></span>
                     {% else %}
                     <a href="{% url 'geokey_export:export_to_renderer' export.urlhash %}">{{export.urlhash}}</a>
                     {% endif %}
@@ -89,6 +89,33 @@
                     <a href="{% url 'geokey_export:export_delete' export.id %}" class="btn btn-danger">Yes, delete the export.</a>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="reactivate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form class="modal-content panel-default" method="POST" action="{% url 'geokey_export:export_overview' export.id %}" novalidate>
+                {% csrf_token %}
+                <div class="modal-header panel-heading">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Reactivate an expired export</h4>
+                </div>
+                <div class="modal-body panel-body">
+                    <label for="exportExpiration" class="control-label">Export Length of Availability</label>
+                    <div class="radio">
+                        <input type="radio" name="exportExpiration" value="one_off"> one off
+                    </div>
+                    <div class="radio">
+                        <input type="radio" name="exportExpiration" value="one_week"> one week
+                    </div>
+                    <div class="radio">
+                        <input type="radio" name="exportExpiration" value="permanent"> permanent
+                    </div>
+                </div>
+                <div class="modal-footer panel-footer">
+                    <button type="submit" class="btn btn-primary">Reactivate export</button>
+                </div>
+            </form>
         </div>
     </div>
 {% endblock %}

@@ -3,6 +3,7 @@ import json
 import string
 import random
 
+from django.utils import timezone
 from django.http import HttpResponse
 from django.views.generic import View, TemplateView
 from django.shortcuts import redirect
@@ -38,7 +39,19 @@ class IndexPage(LoginRequiredMixin, TemplateView):
         )
 
 
-class ExportCreate(LoginRequiredMixin, TemplateView):
+class ExportExpiryMixin(object):
+    def get_expiry(self, expiration_val):
+        isoneoff = False
+        expiration = None
+        if expiration_val == "one_off":
+            isoneoff = True
+        elif expiration_val == "one_week":
+            expiration = timezone.now() + datetime.timedelta(days=7)
+
+        return isoneoff, expiration
+
+
+class ExportCreate(LoginRequiredMixin, ExportExpiryMixin, TemplateView):
     template_name = 'export_create.html'
 
     def get_context_data(self, *args, **kwargs):
@@ -64,13 +77,9 @@ class ExportCreate(LoginRequiredMixin, TemplateView):
             category_id
         )
 
-        expiration_val = self.request.POST.get('exportExpiration')
-        isoneoff = False
-        expiration = None
-        if expiration_val == "one_off":
-            isoneoff = True
-        elif expiration_val == "one_week":
-            expiration = datetime.datetime.now() + datetime.timedelta(days=7)
+        isoneoff, expiration = self.get_expiry(
+            self.request.POST.get('exportExpiration')
+        )
 
         creator = self.request.user
 
@@ -136,8 +145,23 @@ class ExportObjectMixin(object):
             }
 
 
-class ExportOverview(LoginRequiredMixin, ExportObjectMixin, TemplateView):
+class ExportOverview(LoginRequiredMixin, ExportExpiryMixin, ExportObjectMixin,
+                     TemplateView):
     template_name = 'export_overview.html'
+
+    def post(self, request, export_id):
+        context = self.get_context_data(export_id)
+        if context.get('export'):
+            export = context['export']
+
+            isoneoff, expiration = self.get_expiry(
+                self.request.POST.get('exportExpiration')
+            )
+            export.isoneoff = isoneoff
+            export.expiration = expiration
+            export.save()
+
+        return self.render_to_response(context)
 
 
 class ExportDelete(LoginRequiredMixin, ExportObjectMixin, TemplateView):
