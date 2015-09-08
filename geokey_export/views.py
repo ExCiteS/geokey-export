@@ -44,17 +44,6 @@ class ExportCreate(LoginRequiredMixin, TemplateView):
     def get_context_data(self, *args, **kwargs):
         projects = Project.objects.get_list(self.request.user)
 
-        first_project_id = None
-        for project in projects:
-            first_project_id = project.id
-            break
-
-        if first_project_id is not None:
-            categories = Category.objects.get_list(
-                self.request.user,
-                first_project_id
-            )
-
         return super(ExportCreate, self).get_context_data(
             name='GeoKey Export',
             projects=projects,
@@ -74,8 +63,6 @@ class ExportCreate(LoginRequiredMixin, TemplateView):
             project_id,
             category_id
         )
-
-        # filter = self.request.POST.get('filter')
 
         expiration_val = self.request.POST.get('exportExpiration')
         isoneoff = False
