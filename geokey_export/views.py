@@ -15,6 +15,7 @@ from rest_framework.views import APIView
 
 from braces.views import LoginRequiredMixin
 
+from geokey import version
 from geokey.categories.models import Category
 from geokey.contributions.serializers import ContributionSerializer
 from geokey.contributions.renderer.geojson import GeoJsonRenderer
@@ -32,7 +33,6 @@ class IndexPage(LoginRequiredMixin, TemplateView):
         exports = Export.objects.filter(creator=self.request.user)
 
         return super(IndexPage, self).get_context_data(
-            name='GeoKey Export',
             exports=exports,
             *args,
             **kwargs
@@ -58,11 +58,22 @@ class ExportCreate(LoginRequiredMixin, ExportExpiryMixin, TemplateView):
         projects = Project.objects.get_list(self.request.user)
 
         return super(ExportCreate, self).get_context_data(
-            name='GeoKey Export',
             projects=projects,
             *args,
             **kwargs
         )
+
+    def get_hash(self):
+        export_check = True
+
+        while export_check:
+            urlhash = ''.join([
+                random.choice(string.ascii_letters + string.digits)
+                for n in xrange(40)
+            ])
+            export_check = Export.objects.filter(urlhash=urlhash).exists()
+
+        return urlhash
 
     def post(self, request):
         name = self.request.POST.get('exportName')
@@ -82,24 +93,12 @@ class ExportCreate(LoginRequiredMixin, ExportExpiryMixin, TemplateView):
         )
 
         creator = self.request.user
-
-        urlhash = ''.join([
-            random.choice(string.ascii_letters + string.digits)
-            for n in xrange(40)
-        ])
-        export_check = Export.objects.filter(urlhash=urlhash).exists()
-        while export_check:
-            urlhash = ''.join([
-                random.choice(string.ascii_letters + string.digits)
-                for n in xrange(40)
-            ])
-            export_check = Export.objects.filter(urlhash=urlhash).exists()
+        urlhash = self.get_hash()
 
         export = Export.objects.create(
             name=name,
             project=project,
             category=category,
-            # filter=filter,
             isoneoff=isoneoff,
             expiration=expiration,
             urlhash=urlhash,
@@ -185,7 +184,8 @@ class ExportToRenderer(View):
     def get_context(self, request, urlhash):
         context = {
             'PLATFORM_NAME': get_current_site(self.request).name,
-            'user': request.user
+            'user': request.user,
+            'GEOKEY_VERSION': version.get_version()
         }
 
         error_context = context.copy()

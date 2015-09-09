@@ -23,7 +23,7 @@
         });
 
         if(selectedProjectId) {
-            $.get('/admin/export/create/' + selectedProjectId, function (new_categories) {
+            $.get('/admin/export/' + selectedProjectId + '/categories/', function (new_categories) {
                 if(new_categories) {
                     var new_categories_p = $.parseJSON(new_categories);
 

@@ -40,7 +40,7 @@ urlpatterns = patterns(
         ExportCreate.as_view(),
         name='export_create'),
     url(
-        r'^admin/export/create/(?P<project_id>[0-9]+)/$',
+        r'^admin/export/(?P<project_id>[0-9]+)/categories/$',
         ExportCreateUpdateCategories.as_view(),
         name='export_create_update_categories'),
     url(
