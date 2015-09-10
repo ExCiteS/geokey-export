@@ -17,14 +17,12 @@ before_script:
 - psql template1 postgres -c 'create extension hstore;'
 - psql -c 'create database geokey;' -U postgres
 - psql -U postgres -d geokey -c "create extension postgis;"
-- pip install coveralls
 - pip install geokey
 - pip install -r travis/requirements.txt
 - pip install -e .
 - python travis/manage.py migrate
 script:
-- coverage run --source=geokey_export travis/manage.py test geokey_export
-after_success: coveralls
+- python travis/manage.py test geokey_export
 deploy:
   provider: pypi
   user: excites
