@@ -36,7 +36,7 @@
 
               <div class="form-group">
                 <label for="exportName" class="control-label">Name of the Export (required)</label>
-                <input type="text" class="form-control input-lg" name="exportName" required>
+                <input type="text" class="form-control input-lg" name="exportName" maxlength="100"  required>
               </div>
 
               <div class="form-group">
@@ -58,12 +58,15 @@
 
               <div class="form-group">
                 <label for="exportExpiration" class="control-label">Export Length of Availability (required)</label>
-                <select class="form-control input-lg" name="exportExpiration" required>
-                  <option value=""></option>
-                  <option value="one_off">one off</option>
-                  <option value="one_week">one week</option>
-                  <option value="permanent">permanent</option>
-                </select>
+                <div class="radio">
+                    <input type="radio" name="exportExpiration" value="one_off"> one off
+                </div>
+                <div class="radio">
+                    <input type="radio" name="exportExpiration" value="one_week"> one week
+                </div>
+                <div class="radio">
+                    <input type="radio" name="exportExpiration" value="permanent"> permanent
+                </div>
               </div>
 
               <div class="form-group">
