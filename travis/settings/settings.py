@@ -6,6 +6,8 @@ from geokey.core.settings.dev import *
 DEFAULT_FROM_EMAIL = 'sender@example.com'
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 
+SECRET_KEY = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
