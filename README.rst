@@ -1,6 +1,9 @@
 geokey-export
 =============
 
+.. image:: https://travis-ci.org/ExCiteS/geokey-export.svg?branch=master
+    :target: https://travis-ci.org/ExCiteS/geokey-export
+
 Testing
 -------
 
