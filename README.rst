@@ -40,15 +40,6 @@ Add the package to installed apps:
         'geokey_export'
     )
 
-Then, link the URLs into `urls.py`:
-
-.. code-block:: console
-
-    urlpatterns = patterns(
-        ...
-        url(r'^', include('geokey_export.urls', namespace='geokey_export')),
-    )
-
 Migrate the models into the database:
 
 .. code-block:: console
