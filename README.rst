@@ -4,26 +4,10 @@ geokey-export
 .. image:: https://travis-ci.org/ExCiteS/geokey-export.svg?branch=master
     :target: https://travis-ci.org/ExCiteS/geokey-export
 
-Testing
--------
-
-Run tests:
-
-.. code-block:: console
-
-    python manage.py test geokey_export --nocapture --nologcapture
-
-Test Coverage:
-
-.. code-block:: console
-
-    coverage run --source=geokey_export manage.py test geokey_export --nocapture --nologcapture
-    coverage report -m --omit=*/tests/*,*/migrations/*
-
 Install
 -------
 
-Install the extension. Move to the root directory of your package and install for development.
+Install the extension:
 
 .. code-block:: console
 
@@ -44,7 +28,7 @@ Migrate the models into the database:
 
 .. code-block:: console
 
-    python manage.py migrate
+    python manage.py migrate geokey_export
 
 Copy static files:
 
@@ -53,3 +37,19 @@ Copy static files:
     python manage.py collectstatic
 
 You're ready to go now.
+
+Test
+----
+
+Run tests:
+
+.. code-block:: console
+
+    python manage.py test geokey_export
+
+Test Coverage:
+
+.. code-block:: console
+
+    coverage run --source=geokey_export manage.py test geokey_export
+    coverage report -m --omit=*/tests/*,*/migrations/*
