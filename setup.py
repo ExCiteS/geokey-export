@@ -19,11 +19,4 @@ setup(
 
     # Include additional files into the package
     include_package_data=True,
-
-    # long_description=open("README.txt").read(),
-
-    # Dependent packages (distributions)
-    install_requires=[
-
-    ],
 )
