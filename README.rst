@@ -1,10 +1,10 @@
 geokey-export
 =============
 
-Export data from GeoKey into various formats
-
 .. image:: https://travis-ci.org/ExCiteS/geokey-export.svg?branch=master
     :target: https://travis-ci.org/ExCiteS/geokey-export
+
+Export data from GeoKey into various formats
     
 Currently supported formats:
 
