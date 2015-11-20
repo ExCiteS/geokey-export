@@ -23,7 +23,13 @@ Currently supported formats:
 Install
 -------
 
-Install the extension:
+Install the extension from PyPI:
+
+.. code-block:: console
+
+    pip install geokey-export
+
+Or from cloned repository:
 
 .. code-block:: console
 
