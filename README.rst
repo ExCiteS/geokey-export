@@ -1,13 +1,21 @@
 geokey-export
 =============
 
-.. image:: https://travis-ci.org/ExCiteS/geokey-export.svg?branch=master
+.. image:: https://img.shields.io/pypi/v/geokey-export.svg
+    :alt: PyPI Package
+    :target: https://pypi.python.org/pypi/geokey-export
+
+.. image:: https://img.shields.io/travis/ExCiteS/geokey-export/master.svg
+    :alt: Travis CI Build Status
     :target: https://travis-ci.org/ExCiteS/geokey-export
 
-Export data from GeoKey into various formats
-    
-Currently supported formats:
+.. image:: https://img.shields.io/coveralls/ExCiteS/geokey-export/master.svg
+    :alt: Coveralls Test Coverage
+    :target: https://coveralls.io/r/ExCiteS/geokey-export
 
+Export data from GeoKey into various formats.
+
+Currently supported formats:
 - KML
 - GeoJSON
 
@@ -21,14 +29,13 @@ Install the extension:
     cd geokey-export
     pip install -e .
 
-
 Add the package to installed apps:
 
 .. code-block:: console
 
     INSTALLED_APPS += (
         ...
-        'geokey_export'
+        'geokey_export',
     )
 
 Migrate the models into the database:
@@ -43,7 +50,7 @@ Copy static files:
 
     python manage.py collectstatic
 
-You're ready to go now.
+You're now ready to go!
 
 Test
 ----
@@ -54,7 +61,7 @@ Run tests:
 
     python manage.py test geokey_export
 
-Test Coverage:
+Check code coverage:
 
 .. code-block:: console
 
