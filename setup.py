@@ -1,7 +1,7 @@
 import os
 del os.link
 
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 setup(
     # Application name:
@@ -15,15 +15,8 @@ setup(
     author_email="p.rickles@ucl.ac.uk",
 
     # Packages
-    packages=["geokey_export"],
+    packages=find_packages(exclude=['*.tests', '*.tests.*', 'tests.*']),
 
     # Include additional files into the package
     include_package_data=True,
-
-    # long_description=open("README.txt").read(),
-
-    # Dependent packages (distributions)
-    install_requires=[
-
-    ],
 )
