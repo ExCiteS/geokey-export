@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name='geokey_export',
+    name='geokey-export',
     version='0.1.0',
     author='Patrick Rickles',
     author_email='p.rickles@ucl.ac.uk',
