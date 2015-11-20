@@ -1,6 +1,3 @@
-geokey-export
-=============
-
 .. image:: https://img.shields.io/pypi/v/geokey-export.svg
     :alt: PyPI Package
     :target: https://pypi.python.org/pypi/geokey-export
@@ -13,9 +10,13 @@ geokey-export
     :alt: Coveralls Test Coverage
     :target: https://coveralls.io/r/ExCiteS/geokey-export
 
+geokey-export
+=============
+
 Export data from GeoKey into various formats.
 
 Currently supported formats:
+
 - KML
 - GeoJSON
 
