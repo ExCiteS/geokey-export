@@ -1,7 +1,10 @@
+from django.dispatch import receiver
 from django.utils import timezone
 
 from django.db import models
 from django.conf import settings
+
+from geokey.projects.models import Project
 
 
 class Export(models.Model):
@@ -26,3 +29,13 @@ class Export(models.Model):
     def expire(self):
         self.expiration = timezone.now()
         self.save()
+
+
+@receiver(models.signals.post_save, sender=Project)
+def post_save_project(sender, instance, **kwargs):
+    """
+    Receiver that is called after a project is saved. It is used to remove the
+    export when project is deleted.
+    """
+    if instance.status == 'deleted':
+        Export.objects.filter(project=instance).delete()
