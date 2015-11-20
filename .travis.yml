@@ -18,6 +18,7 @@ install:
   - sudo apt-get install python-gdal gdal-bin binutils
   - export C_INCLUDE_PATH=/usr/include/gdal
   - export CPLUS_INCLUDE_PATH=/usr/include/gdal
+  - pip install --upgrade pip
 
 before_script:
   - psql template1 postgres -c 'create extension hstore;'
