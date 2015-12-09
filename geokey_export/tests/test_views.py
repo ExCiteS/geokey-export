@@ -7,8 +7,8 @@ from django.core.urlresolvers import reverse
 
 from rest_framework.test import APIRequestFactory
 
-from geokey.users.tests.model_factories import UserF
-from geokey.projects.tests.model_factories import ProjectF
+from geokey.users.tests.model_factories import UserFactory
+from geokey.projects.tests.model_factories import ProjectFactory
 from geokey.categories.tests.model_factories import CategoryFactory
 from geokey import version
 from geokey.contributions.renderer.geojson import GeoJsonRenderer
@@ -38,7 +38,7 @@ class IndexPageTest(TestCase):
         self.assertEqual(response['location'], '/admin/account/login/?next=')
 
     def test_get_with_some_dude(self):
-        user = UserF.create()
+        user = UserFactory.create()
         export = ExportFactory.create(**{'creator': user})
         self.request.user = user
         response = self.view(self.request).render()
@@ -79,8 +79,8 @@ class ExportCreateTest(TestCase):
         self.assertEqual(Export.objects.count(), 0)
 
     def test_get_with_some_dude(self):
-        user = UserF.create()
-        project = ProjectF.create(**{'creator': user})
+        user = UserFactory.create()
+        project = ProjectFactory.create(**{'creator': user})
         self.request.user = user
         response = self.view(self.request).render()
 
@@ -97,8 +97,8 @@ class ExportCreateTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_post_with_some_dude(self):
-        user = UserF.create()
-        project = ProjectF.create(**{'creator': user})
+        user = UserFactory.create()
+        project = ProjectFactory.create(**{'creator': user})
         category = CategoryFactory.create(**{'project': project})
 
         self.request.method = 'POST'
@@ -218,7 +218,7 @@ class ExportOverviewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_get_with_some_dude(self):
-        user = UserF.create()
+        user = UserFactory.create()
         self.request.user = user
 
         response = self.view(self.request, export_id=self.export.id).render()
@@ -237,7 +237,7 @@ class ExportOverviewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_post_with_some_dude(self):
-        user = UserF.create()
+        user = UserFactory.create()
         self.request.user = user
         self.request.method = 'POST'
         self.request.POST = self.data
@@ -261,7 +261,7 @@ class ExportOverviewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_get_non_exisiting_export(self):
-        user = UserF.create()
+        user = UserFactory.create()
         self.request.user = user
 
         response = self.view(self.request, export_id=8923783903786).render()
@@ -280,7 +280,7 @@ class ExportOverviewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_post_non_exisiting_export(self):
-        user = UserF.create()
+        user = UserFactory.create()
         self.request.user = user
         self.request.method = 'POST'
         self.request.POST = self.data
@@ -330,7 +330,7 @@ class ExportDeleteTest(TestCase):
         self.assertEqual(Export.objects.count(), 0)
 
     def test_get_with_some_dude(self):
-        user = UserF.create()
+        user = UserFactory.create()
         self.request.user = user
         response = self.view(self.request, export_id=self.export.id).render()
 
@@ -351,7 +351,7 @@ class ExportDeleteTest(TestCase):
 
 class ExportCreateUpdateCategoriesTest(TestCase):
     def setUp(self):
-        self.project = ProjectF.create()
+        self.project = ProjectFactory.create()
         CategoryFactory.create(**{'project': self.project})
 
         self.view = ExportCreateUpdateCategories.as_view()
@@ -368,7 +368,7 @@ class ExportCreateUpdateCategoriesTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_get_with_some_dude(self):
-        self.request.user = UserF.create()
+        self.request.user = UserFactory.create()
         response = self.view(self.request, project_id=self.project.id)
         self.assertEqual(response.status_code, 404)
 

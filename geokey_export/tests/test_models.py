@@ -2,7 +2,7 @@ from django.utils import timezone
 from django.test import TestCase
 
 from geokey.projects.models import Project
-from geokey.projects.tests.model_factories import ProjectF
+from geokey.projects.tests.model_factories import ProjectFactory
 
 from ..models import Export, post_save_project
 from .model_factories import ExportFactory
@@ -28,7 +28,7 @@ class TemplateTagsTest(TestCase):
 class ProjectSaveTest(TestCase):
 
     def test_post_save_project_when_only_changing_status(self):
-        project = ProjectF(**{'status': 'active'})
+        project = ProjectFactory(**{'status': 'active'})
         ExportFactory.create(**{'project': project})
 
         project.status = 'pending'
@@ -41,7 +41,7 @@ class ProjectSaveTest(TestCase):
         )
 
     def test_post_save_project_when_deleting(self):
-        project = ProjectF(**{'status': 'active'})
+        project = ProjectFactory(**{'status': 'active'})
         ExportFactory.create(**{'project': project})
 
         project.status = 'deleted'
