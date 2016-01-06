@@ -76,12 +76,12 @@ class ExportCreate(LoginRequiredMixin, ExportExpiryMixin, TemplateView):
         return urlhash
 
     def post(self, request):
-        name = self.request.POST.get('exportName')
+        name = self.request.POST.get('name')
 
-        project_id = self.request.POST.get('exportProject')
+        project_id = self.request.POST.get('project')
         project = Project.objects.get_single(self.request.user, project_id)
 
-        category_id = self.request.POST.get('exportCategory')
+        category_id = self.request.POST.get('category')
         category = Category.objects.get_single(
             self.request.user,
             project_id,
@@ -89,7 +89,7 @@ class ExportCreate(LoginRequiredMixin, ExportExpiryMixin, TemplateView):
         )
 
         isoneoff, expiration = self.get_expiry(
-            self.request.POST.get('exportExpiration')
+            self.request.POST.get('expiration')
         )
 
         creator = self.request.user
@@ -154,7 +154,7 @@ class ExportOverview(LoginRequiredMixin, ExportExpiryMixin, ExportObjectMixin,
             export = context['export']
 
             isoneoff, expiration = self.get_expiry(
-                self.request.POST.get('exportExpiration')
+                self.request.POST.get('expiration')
             )
             export.isoneoff = isoneoff
             export.expiration = expiration
@@ -173,7 +173,7 @@ class ExportDelete(LoginRequiredMixin, ExportObjectMixin, TemplateView):
         if export is not None:
             export.delete()
 
-            messages.success(self.request, "The export has been deleted.")
+            messages.success(self.request, 'The export has been deleted.')
             return redirect('geokey_export:index')
 
         return self.render_to_response(context)

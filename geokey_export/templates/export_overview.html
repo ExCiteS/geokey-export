@@ -1,67 +1,74 @@
-{% extends "base.html" %}
-
+{% extends 'base.html' %}
 {% load export_tags %}
 
-{% block title %} | Extension: GeoKey Export{% endblock %}
+{% block title %} | Export: {{ export.name }} overview{% endblock %}
 
 {% block main %}
-<div class="page-header">
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-6">
-                <h1 class="smaller"><a href="{% url 'geokey_export:index' %}">GeoKey Export</a></h1>
-            </div>
-        </div>
-    </div>
-</div>
+{% include 'export_header.html' %}
 
 <div class="container">
-    {% include 'snippets/messages.html' %}
+    {% include 'export_breadcrumb.html' %}
 
     <div class="row">
-        <div class="col-sm-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h6 class="item-info">Extension</h6>
-                    <h3>GeoKey Export</h3>
-                </div>
-                <div class="list-group">
-                    <a href="{% url 'geokey_export:index' %}" class="list-group-item active">Manage your Exports</a>
-                    <a href="{% url 'geokey_export:export_create' %}" class="list-group-item">Create new Export</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-8">
-            <h3>Export <em>{{ export.name }}</em></h3>
-            <table class="table table-hover">
-                <tr><td>Name</td><td>{{export.name}}</td></tr>
-                <tr><td>Project</td><td>{{export.project.name}}</td></tr>
-                <tr><td>Category</td><td>{{export.category.name}}</td></tr>
-                <tr><td>Creator</td><td>{{export.creator}}</td></tr>
-                <tr><td>Expiration date</td><td>{{ export|expiry }}</td></tr>
-                <tr><td>Share link</td><td>
-                    {% if export.is_expired %}
-                    <span class="text-danger"><strong>The export is expired</strong> | <a href="#" data-toggle="modal" data-target="#reactivate">Reactivate</a></span>
-                    {% else %}
-                    <a href="{% url 'geokey_export:export_to_renderer' export.urlhash %}">{{export.urlhash}}</a>
-                    {% endif %}
-                </td></tr>
-            </table>
+        <div class="col-md-8 col-md-offset-2">
+            <h3 class="header">{{ export.name }}</h3>
 
+            <table class="table table-hover">
+                <tr>
+                    <td>Name</td>
+                    <td>{{ export.name }}</td>
+                </tr>
+
+                <tr>
+                    <td>Project</td>
+                    <td>{{ export.project.name }}</td>
+                </tr>
+
+                <tr>
+                    <td>Category</td>
+                    <td>{{ export.category.name }}</td>
+                </tr>
+
+                <tr>
+                    <td>Creator</td>
+                    <td>{{ export.creator }}</td>
+                </tr>
+
+                <tr>
+                    <td>Expiration date</td>
+                    <td>{{ export|expiry }}</td>
+                </tr>
+
+                <tr>
+                    <td>Share link</td>
+                    <td>
+                        {% if export.is_expired %}
+                            <span class="text-danger">The export has expired</span>
+                            <span>|</span>
+                            <a href="#" data-toggle="modal" data-target="#reactivate-confirm">Reactivate</a>
+                        {% else %}
+                            <a href="{% url 'geokey_export:export_to_renderer' export.urlhash %}">
+                                {{ export.urlhash }}
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-sm-8 col-sm-offset-4">
+        <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-danger">
                 <div class="panel-heading">
                     <h2 class="panel-title">Be careful!</h2>
                 </div>
+
                 <div class="panel-body becareful">
                     <div>
                         <strong>Delete export</strong>
-                        <p>If you delete the export there's no way back.</p>
-                        <a href="#" class="text-danger" data-toggle="modal" data-target="#delete-confirm">Delete this export</a>
+                        <p>If you delete the export, there's no way back.</p>
+                        <a href="#" class="text-danger" data-toggle="modal" data-target="#delete-confirm">Delete</a>
                     </div>
                 </div>
             </div>
@@ -71,55 +78,63 @@
 {% endblock %}
 
 {% block modals %}
-    <div class="modal fade" id="delete-confirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div role="dialog" id="delete-confirm" class="modal fade" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content panel-danger">
                 <div class="modal-header panel-heading">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="myModalLabel">Are you sure?</h4>
+                    <h4 class="modal-title">Are you sure?</h4>
                 </div>
+
                 <div class="modal-body panel-body">
-                    <p><strong>Before you delete the export please read through the consequences of this action:</strong></p>
+                    <p>Before you delete the export please read through the consequences of this action:</p>
+
                     <ul>
-                        <li>All information about the export will be removed from the database. This can not be undone.</li>
+                        <li>All information about the export will be removed from the database. This cannot be undone.</li>
                         <li>Users of your export will no longer be able to use your export to access data.</li>
                     </ul>
                 </div>
+
                 <div class="modal-footer panel-footer">
-                    <a href="{% url 'geokey_export:export_delete' export.id %}" class="btn btn-danger">Yes, delete the export.</a>
+                    <a href="{% url 'geokey_export:export_delete' export.id %}" class="btn btn-danger">Yes, delete this export</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="reactivate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div role="dialog" id="reactivate-confirm" class="modal fade" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <form class="modal-content panel-default" method="POST" action="{% url 'geokey_export:export_overview' export.id %}" novalidate>
                 {% csrf_token %}
+
                 <div class="modal-header panel-heading">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="myModalLabel">Reactivate an expired export</h4>
+                    <h4 class="modal-title">Reactivate an expired export</h4>
                 </div>
+
                 <div class="modal-body panel-body">
-                    <label for="exportExpiration" class="control-label">Export Length of Availability</label>
-                    <div class="radio">
-                        <input type="radio" name="exportExpiration" value="one_off"> one off
-                    </div>
-                    <div class="radio">
-                        <input type="radio" name="exportExpiration" value="one_week"> one week
-                    </div>
-                    <div class="radio">
-                        <input type="radio" name="exportExpiration" value="permanent"> permanent
-                    </div>
+                    <label for="expiration" class="control-label">New export length of availability:</label>
+
+                    <label class="radio">
+                        <input type="radio" name="expiration" value="one_off" required>
+                        <span>one off</span>
+                    </label>
+
+                    <label class="radio">
+                        <input type="radio" name="expiration" value="one_week" required>
+                        <span>one week</span>
+                    </label>
+
+                    <label class="radio">
+                        <input type="radio" name="expiration" value="permanent" required>
+                        <span>permanent</span>
+                    </label>
                 </div>
+
                 <div class="modal-footer panel-footer">
                     <button type="submit" class="btn btn-primary">Reactivate export</button>
                 </div>
             </form>
         </div>
     </div>
-{% endblock %}
-
-{% block libraries %}
-
 {% endblock %}
