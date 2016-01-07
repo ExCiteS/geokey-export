@@ -258,8 +258,9 @@ class ExportToRenderer(View):
             contributions = export.project.get_all_contributions(
                 export.creator).filter(category=export.category)
 
-            # if export.bounding_box is not None:
-
+            if export.bounding_box is not None:
+                contributions = contributions.filter(
+                    location__geometry__bboverlaps=export.bounding_box)
 
             serializer = ContributionSerializer(
                 contributions,
