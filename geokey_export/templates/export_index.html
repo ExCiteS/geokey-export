@@ -1,61 +1,42 @@
-{% extends "base.html" %}
-
+{% extends 'base.html' %}
 {% load export_tags %}
 
-{% block title %} | Extension: GeoKey Export{% endblock %}
+{% block title %} | Export{% endblock %}
 
 {% block main %}
-<div class="page-header">
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-6">
-                <h1 class="smaller"><a href="{% url 'geokey_export:index' %}">GeoKey Export</a></h1>
-            </div>
-        </div>
-    </div>
-</div>
+{% include 'export_header.html' %}
 
 <div class="container">
-    {% include 'snippets/messages.html' %}
-
     <div class="row">
-        <div class="col-sm-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h6 class="item-info">Extension</h6>
-                    <h3>{{ name }}</h3>
-                </div>
-                <div class="list-group">
-                    <a href="{% url 'geokey_export:index' %}" class="list-group-item active">Manage your Exports</a>
-                    <a href="{% url 'geokey_export:export_create' %}" class="list-group-item">Create new Export</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-8">
+        <div class="col-md-12">
             <h3 class="header">
-                Manage your exports
+                <span>Manage exports</span>
+
                 {% if exports %}
-                    <a href="{% url 'geokey_export:export_create' %}" class="btn btn-success btn-sm pull-right"><span class="glyphicon glyphicon-plus"></span> Create new export</a>
+                    <a role="button" href="{% url 'geokey_export:export_create' %}" class="btn btn-sm btn-success pull-right" data-loader="true">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        <span>Create new export</span>
+                    </a>
                 {% endif %}
             </h3>
+
             <ul class="list-unstyled overview-list">
                 {% for export in exports %}
-                <li>
-                    <h3><a href="{% url 'geokey_export:export_overview' export.id %}">{{export.name}}</a></h3>
-                    <p class="meta">Expiration: {{ export|expiry }}</p>
-                </li>
+                    <li>
+                        <h3><a href="{% url 'geokey_export:export_overview' export.id %}">{{ export.name }}</a></h3>
+                        <p class="meta">Expiration: {{ export|expiry }}</p>
+                    </li>
                 {% empty %}
-                <div class="well empty-list">
-                    <p class="lead">You have not created any exports yet.</p>
-                    <a href="{% url 'geokey_export:export_create' %}" class="btn btn-success btn-lg">Create new export</a>
-                </div>
+                    <li>
+                        <div class="well empty-list">
+                            <p class="lead">We couldn't find any exports you are eligible to manage.</p>
+                            <p>You can create a new export to allow data to be accessed.</p>
+                            <a role="button" href="{% url 'geokey_export:export_create' %}" class="btn btn-lg btn-success" data-loader="true">Create a new export</a>
+                        </div>
+                    </li>
                 {% endfor %}
             </ul>
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block libraries %}
-
 {% endblock %}

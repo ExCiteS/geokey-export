@@ -103,10 +103,10 @@ class ExportCreateTest(TestCase):
 
         self.request.method = 'POST'
         self.request.POST = {
-            'exportName': 'Name',
-            'exportProject': project.id,
-            'exportCategory': category.id,
-            'exportExpiration': 'one_off'
+            'name': 'Name',
+            'project': project.id,
+            'category': category.id,
+            'expiration': 'one_off'
         }
         self.request.user = user
 
@@ -130,7 +130,7 @@ class ExportOverviewTest(TestCase):
         self.request.user = AnonymousUser()
         self.export = ExportFactory.create()
         self.data = {
-            'exportExpiration': 'one_off'
+            'expiration': 'one_off'
         }
 
     def test_get_with_anonymous(self):
@@ -196,7 +196,7 @@ class ExportOverviewTest(TestCase):
         self.request.user = user
         self.request.method = 'POST'
         self.request.POST = {
-            'exportExpiration': 'one_week'
+            'expiration': 'one_week'
         }
 
         response = self.view(self.request, export_id=self.export.id).render()
