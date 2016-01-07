@@ -1,5 +1,4 @@
 import datetime
-import json
 import string
 import random
 
@@ -10,18 +9,22 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.gis.geos import GEOSGeometry
 
+from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.response import Response
 
 from braces.views import LoginRequiredMixin
 
 from geokey import version
-from geokey.categories.models import Category
-from geokey.contributions.serializers import ContributionSerializer
-from geokey.contributions.renderer.geojson import GeoJsonRenderer
-from geokey.contributions.renderer.kml import KmlRenderer
 from geokey.core.decorators import handle_exceptions_for_ajax
 from geokey.projects.models import Project
+from geokey.categories.models import Category
+from geokey.contributions.serializers import ContributionSerializer
+from geokey.contributions.views.observations import GZipView, GeoJsonView
+from geokey.contributions.renderer.geojson import GeoJsonRenderer
+from geokey.contributions.renderer.kml import KmlRenderer
 
 from .models import Export
 
@@ -92,6 +95,10 @@ class ExportCreate(LoginRequiredMixin, ExportExpiryMixin, TemplateView):
             self.request.POST.get('expiration')
         )
 
+        bounding_box = self.request.POST.get('geometry')
+        if bounding_box is not None and len(bounding_box) > 0:
+                bounding_box = GEOSGeometry(bounding_box)
+
         creator = self.request.user
         urlhash = self.get_hash()
 
@@ -101,6 +108,7 @@ class ExportCreate(LoginRequiredMixin, ExportExpiryMixin, TemplateView):
             category=category,
             isoneoff=isoneoff,
             expiration=expiration,
+            bounding_box=bounding_box,
             urlhash=urlhash,
             creator=creator
         )
@@ -108,7 +116,7 @@ class ExportCreate(LoginRequiredMixin, ExportExpiryMixin, TemplateView):
         return redirect('geokey_export:export_overview', export_id=export.id)
 
 
-class ExportCreateUpdateCategories(LoginRequiredMixin, APIView):
+class ExportGetCategories(LoginRequiredMixin, APIView):
 
     @handle_exceptions_for_ajax
     def get(self, request, project_id):
@@ -118,7 +126,25 @@ class ExportCreateUpdateCategories(LoginRequiredMixin, APIView):
         for category in categories:
             categories_dict[category.id] = category.name
 
-        return HttpResponse(json.dumps(categories_dict))
+        return Response(categories_dict, status=status.HTTP_200_OK)
+
+
+class ExportGetContributions(GZipView, GeoJsonView):
+
+    @handle_exceptions_for_ajax
+    def get(self, request, project_id, category_id):
+        project = Project.objects.get(pk=project_id)
+        category = project.categories.get(pk=category_id)
+        contributions = project.get_all_contributions(
+            self.request.user).filter(category=category)
+
+        serializer = ContributionSerializer(
+            contributions,
+            many=True,
+            context={'user': self.request.user, 'project': project}
+        )
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ExportObjectMixin(object):
@@ -150,14 +176,25 @@ class ExportOverview(LoginRequiredMixin, ExportExpiryMixin, ExportObjectMixin,
 
     def post(self, request, export_id):
         context = self.get_context_data(export_id)
+
         if context.get('export'):
             export = context['export']
 
-            isoneoff, expiration = self.get_expiry(
-                self.request.POST.get('expiration')
-            )
-            export.isoneoff = isoneoff
-            export.expiration = expiration
+            bounding_box = self.request.POST.get('geometry')
+            expiration = self.request.POST.get('expiration')
+
+            if expiration is not None:
+                isoneoff, expiration = self.get_expiry(
+                    self.request.POST.get('expiration')
+                )
+                export.isoneoff = isoneoff
+                export.expiration = expiration
+
+            if bounding_box is not None and len(bounding_box) > 0:
+                export.bounding_box = GEOSGeometry(bounding_box)
+            else:
+                export.bounding_box = None
+
             export.save()
 
         return self.render_to_response(context)

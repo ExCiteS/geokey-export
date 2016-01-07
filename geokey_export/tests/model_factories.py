@@ -14,4 +14,5 @@ class ExportFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: 'Export %d' % n)
     project = factory.SubFactory(ProjectFactory)
     urlhash = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+    bounding_box = None
     creator = factory.SubFactory(UserFactory)
