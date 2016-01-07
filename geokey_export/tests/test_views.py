@@ -389,6 +389,67 @@ class ExportGetCategoriesTest(TestCase):
         response = self.view(self.request, project_id=self.project.id)
         self.assertEqual(response.status_code, 404)
 
+    def test_get_when_project_does_not_exist(self):
+        self.request.user = self.project.creator
+        self.project.delete()
+        response = self.view(self.request, project_id=self.project.id)
+        self.assertEqual(response.status_code, 404)
+
+
+class ExportGetContributionsTest(TestCase):
+    def setUp(self):
+        self.project = ProjectFactory.create()
+        self.category = CategoryFactory.create(**{'project': self.project})
+
+        self.view = ExportGetContributions.as_view()
+        self.url = reverse(
+            'geokey_export:export_get_contributions',
+            kwargs={
+                'project_id': self.project.id,
+                'category_id': self.category.id
+            }
+        )
+        self.request = APIRequestFactory().get(self.url)
+        self.request.user = AnonymousUser()
+
+    def test_get_with_admin(self):
+        self.request.user = self.project.creator
+        response = self.view(
+            self.request,
+            project_id=self.project.id,
+            category_id=self.category.id
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_with_some_dude(self):
+        self.request.user = UserFactory.create()
+        response = self.view(
+            self.request,
+            project_id=self.project.id,
+            category_id=self.category.id
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_when_project_does_not_exist(self):
+        self.request.user = self.project.creator
+        self.project.delete()
+        response = self.view(
+            self.request,
+            project_id=self.project.id,
+            category_id=self.category.id
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_when_category_does_not_exist(self):
+        self.request.user = self.project.creator
+        self.category.delete()
+        response = self.view(
+            self.request,
+            project_id=self.project.id,
+            category_id=self.category.id
+        )
+        self.assertEqual(response.status_code, 404)
+
 
 class ExportToRendererTest(TestCase):
     def setUp(self):

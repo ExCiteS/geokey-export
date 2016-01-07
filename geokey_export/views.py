@@ -133,15 +133,15 @@ class ExportGetContributions(GZipView, GeoJsonView):
 
     @handle_exceptions_for_ajax
     def get(self, request, project_id, category_id):
-        project = Project.objects.get(pk=project_id)
-        category = project.categories.get(pk=category_id)
-        contributions = project.get_all_contributions(
+        categories = Category.objects.get_list(self.request.user, project_id)
+        category = categories.get(pk=category_id)
+        contributions = category.project.get_all_contributions(
             self.request.user).filter(category=category)
 
         serializer = ContributionSerializer(
             contributions,
             many=True,
-            context={'user': self.request.user, 'project': project}
+            context={'user': self.request.user, 'project': category.project}
         )
 
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -257,6 +257,9 @@ class ExportToRenderer(View):
 
             contributions = export.project.get_all_contributions(
                 export.creator).filter(category=export.category)
+
+            # if export.bounding_box is not None:
+
 
             serializer = ContributionSerializer(
                 contributions,
