@@ -8,7 +8,8 @@ from views import (
     ExportCreate,
     ExportDelete,
     ExportToRenderer,
-    ExportCreateUpdateCategories
+    ExportGetCategories,
+    ExportGetContributions
 )
 
 datapatterns = patterns(
@@ -40,9 +41,13 @@ urlpatterns = patterns(
         ExportCreate.as_view(),
         name='export_create'),
     url(
-        r'^admin/export/(?P<project_id>[0-9]+)/categories/$',
-        ExportCreateUpdateCategories.as_view(),
-        name='export_create_update_categories'),
+        r'^admin/export/projects/(?P<project_id>[0-9]+)/categories/$',
+        ExportGetCategories.as_view(),
+        name='export_get_categories'),
+    url(
+        r'^admin/export/projects/(?P<project_id>[0-9]+)/categories/(?P<category_id>[0-9]+)/$',
+        ExportGetContributions.as_view(),
+        name='export_get_contributions'),
     url(
         r'^', include(datapatterns))
 )

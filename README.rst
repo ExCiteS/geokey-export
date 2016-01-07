@@ -13,7 +13,7 @@
 geokey-export
 =============
 
-Export data from GeoKey into various formats.
+Export data from GeoKey (v0.9+ only) into various formats.
 
 Currently supported formats:
 

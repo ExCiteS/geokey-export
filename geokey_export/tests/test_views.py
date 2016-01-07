@@ -1,9 +1,10 @@
 from django.test import TestCase
 from django.http import HttpRequest
+from django.core.urlresolvers import reverse
 from django.contrib.auth.models import AnonymousUser
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.urlresolvers import reverse
+from django.contrib.gis.geos import GEOSGeometry
 
 from rest_framework.test import APIRequestFactory
 
@@ -16,7 +17,7 @@ from geokey.contributions.renderer.kml import KmlRenderer
 
 from ..views import (
     IndexPage, ExportCreate, ExportOverview, ExportDelete,
-    ExportCreateUpdateCategories, ExportToRenderer
+    ExportGetCategories, ExportGetContributions, ExportToRenderer
 )
 from ..models import Export
 
@@ -69,15 +70,6 @@ class ExportCreateTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/admin/account/login/?next=')
 
-    def test_post_with_anonymous(self):
-        self.request.method = 'POST'
-
-        response = self.view(self.request)
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/admin/account/login/?next=')
-        self.assertEqual(Export.objects.count(), 0)
-
     def test_get_with_some_dude(self):
         user = UserFactory.create()
         project = ProjectFactory.create(**{'creator': user})
@@ -96,6 +88,15 @@ class ExportCreateTest(TestCase):
         self.assertEqual(unicode(response.content), rendered)
         self.assertEqual(response.status_code, 200)
 
+    def test_post_with_anonymous(self):
+        self.request.method = 'POST'
+
+        response = self.view(self.request)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/admin/account/login/?next=')
+        self.assertEqual(Export.objects.count(), 0)
+
     def test_post_with_some_dude(self):
         user = UserFactory.create()
         project = ProjectFactory.create(**{'creator': user})
@@ -106,7 +107,10 @@ class ExportCreateTest(TestCase):
             'name': 'Name',
             'project': project.id,
             'category': category.id,
-            'expiration': 'one_off'
+            'expiration': 'one_off',
+            'geometry': '{"type": "Polygon","coordinates": [['
+                        '[-0.508,51.682],[-0.53,51.327],[0.225,51.323],'
+                        '[0.167,51.667],[-0.508,51.682]]]}'
         }
         self.request.user = user
 
@@ -120,6 +124,11 @@ class ExportCreateTest(TestCase):
             response['location'],
             '/admin/export/%s/' % reference.id
         )
+        self.assertEqual(reference.bounding_box.geom_type, 'Polygon')
+        self.assertEqual(
+            reference.bounding_box.json,
+            GEOSGeometry(self.request.POST.get('geometry')).json
+        )
 
 
 class ExportOverviewTest(TestCase):
@@ -130,6 +139,9 @@ class ExportOverviewTest(TestCase):
         self.request.user = AnonymousUser()
         self.export = ExportFactory.create()
         self.data = {
+            'geometry': '{"type": "Polygon","coordinates": [['
+                        '[-0.508,51.682],[-0.53,51.327],[0.225,51.323],'
+                        '[0.167,51.667],[-0.508,51.682]]]}',
             'expiration': 'one_off'
         }
 
@@ -138,17 +150,6 @@ class ExportOverviewTest(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/admin/account/login/?next=')
-
-    def test_post_with_anonymous(self):
-        self.request.method = 'POST'
-        self.request.POST = self.data
-        response = self.view(self.request, export_id=self.export.id)
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/admin/account/login/?next=')
-
-        reference = Export.objects.get(pk=self.export.id)
-        self.assertFalse(reference.isoneoff)
 
     def test_get_with_owner(self):
         user = self.export.creator
@@ -167,6 +168,17 @@ class ExportOverviewTest(TestCase):
         )
         self.assertEqual(unicode(response.content), rendered)
         self.assertEqual(response.status_code, 200)
+
+    def test_post_with_anonymous(self):
+        self.request.method = 'POST'
+        self.request.POST = self.data
+        response = self.view(self.request, export_id=self.export.id)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/admin/account/login/?next=')
+
+        reference = Export.objects.get(pk=self.export.id)
+        self.assertFalse(reference.isoneoff)
 
     def test_post_with_owner(self):
         user = self.export.creator
@@ -190,6 +202,11 @@ class ExportOverviewTest(TestCase):
         )
         self.assertEqual(unicode(response.content), rendered)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(reference.bounding_box.geom_type, 'Polygon')
+        self.assertEqual(
+            reference.bounding_box.json,
+            GEOSGeometry(self.request.POST.get('geometry')).json
+        )
 
     def test_post_with_owner_expired(self):
         user = self.export.creator
@@ -349,14 +366,14 @@ class ExportDeleteTest(TestCase):
         self.assertEqual(Export.objects.count(), 1)
 
 
-class ExportCreateUpdateCategoriesTest(TestCase):
+class ExportGetCategoriesTest(TestCase):
     def setUp(self):
         self.project = ProjectFactory.create()
         CategoryFactory.create(**{'project': self.project})
 
-        self.view = ExportCreateUpdateCategories.as_view()
+        self.view = ExportGetCategories.as_view()
         self.url = reverse(
-            'geokey_export:export_create_update_categories',
+            'geokey_export:export_get_categories',
             kwargs={'project_id': self.project.id}
         )
         self.request = APIRequestFactory().get(self.url)
@@ -370,6 +387,67 @@ class ExportCreateUpdateCategoriesTest(TestCase):
     def test_get_with_some_dude(self):
         self.request.user = UserFactory.create()
         response = self.view(self.request, project_id=self.project.id)
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_when_project_does_not_exist(self):
+        self.request.user = self.project.creator
+        self.project.delete()
+        response = self.view(self.request, project_id=self.project.id)
+        self.assertEqual(response.status_code, 404)
+
+
+class ExportGetContributionsTest(TestCase):
+    def setUp(self):
+        self.project = ProjectFactory.create()
+        self.category = CategoryFactory.create(**{'project': self.project})
+
+        self.view = ExportGetContributions.as_view()
+        self.url = reverse(
+            'geokey_export:export_get_contributions',
+            kwargs={
+                'project_id': self.project.id,
+                'category_id': self.category.id
+            }
+        )
+        self.request = APIRequestFactory().get(self.url)
+        self.request.user = AnonymousUser()
+
+    def test_get_with_admin(self):
+        self.request.user = self.project.creator
+        response = self.view(
+            self.request,
+            project_id=self.project.id,
+            category_id=self.category.id
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_with_some_dude(self):
+        self.request.user = UserFactory.create()
+        response = self.view(
+            self.request,
+            project_id=self.project.id,
+            category_id=self.category.id
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_when_project_does_not_exist(self):
+        self.request.user = self.project.creator
+        self.project.delete()
+        response = self.view(
+            self.request,
+            project_id=self.project.id,
+            category_id=self.category.id
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_when_category_does_not_exist(self):
+        self.request.user = self.project.creator
+        self.category.delete()
+        response = self.view(
+            self.request,
+            project_id=self.project.id,
+            category_id=self.category.id
+        )
         self.assertEqual(response.status_code, 404)
 
 

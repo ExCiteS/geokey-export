@@ -59,6 +59,13 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="geometry" class="control-label">Bounding box</label>
+
+                    <div id="map"></div>
+                    <input type="hidden" id="geometry" name="geometry" />
+                </div>
+
+                <div class="form-group">
                     <button type="submit" class="btn btn-primary">Save</button>
                     <a role="button" href="{% url 'geokey_export:index' %}" class="btn btn-link">Cancel</a>
                 </div>
@@ -69,6 +76,11 @@
 {% endblock %}
 
 {% block libraries %}
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+<link href="//cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.css" rel="stylesheet">
+<script src="//cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.js"></script>
 <script src="/static/js/admin.ui.forms.validate.js"></script>
+<script src="/static/js/admin.ui.project.extent.js"></script>
 <script src="/static/js/admin.ui.export.js"></script>
 {% endblock %}
