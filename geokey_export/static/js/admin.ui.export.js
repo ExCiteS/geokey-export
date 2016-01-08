@@ -74,8 +74,8 @@ $(function() {
 
     var layer = new L.FeatureGroup();
 
-    if (map) {
-        map.addLayer(layer);
+    if (window.map) {
+        window.map.addLayer(layer);
     }
 
     var currentProject = $('body').data('project');
