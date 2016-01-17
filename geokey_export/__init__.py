@@ -8,6 +8,5 @@ register(
     'geokey_export',
     'Export',
     display_admin=True,
-    superuser=False,
-    version=__version__
+    superuser=False
 )
