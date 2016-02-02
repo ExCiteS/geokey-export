@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 
 from rest_framework.urlpatterns import format_suffix_patterns
 
@@ -12,18 +12,16 @@ from views import (
     ExportGetContributions
 )
 
-datapatterns = patterns(
-    '',
+datapatterns = [
     url(
         r'^admin/export/(?P<urlhash>[\w-]+)$',
         ExportToRenderer.as_view(),
         name='export_to_renderer')
-)
+]
 datapatterns = format_suffix_patterns(datapatterns, allowed=['json', 'kml'])
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(
         r'^admin/export/$',
         IndexPage.as_view(),
@@ -50,4 +48,4 @@ urlpatterns = patterns(
         name='export_get_contributions'),
     url(
         r'^', include(datapatterns))
-)
+]
