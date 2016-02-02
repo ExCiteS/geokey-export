@@ -8,11 +8,15 @@
 $(function() {
     'use strict';
 
-    function populateContributions(project, category) {
-        $.get('/admin/export/projects/' + project + '/categories/' + category, function(contributions) {
-            if (window.map && layer instanceof L.FeatureGroup && contributions) {
-                var length = 0;
+    var initialLoad = false;
 
+    function populateContributions(project, category) {
+        var geometry = $('#geometry').val();
+
+        $.get('/admin/export/projects/' + project + '/categories/' + category, function(contributions) {
+            var length = 0;
+
+            if (window.map && layer instanceof L.FeatureGroup && contributions) {
                 L.geoJson(contributions, {
                     onEachFeature: function() {
                         length++;
@@ -20,9 +24,13 @@ $(function() {
                 }).addTo(layer);
 
                 if (length > 0) {
-                    window.map.fitBounds(layer.getBounds(), {
-                        padding: [50, 50]
-                    });
+                    if (initialLoad && geometry) {
+                        return;
+                    } else {
+                        window.map.fitBounds(layer.getBounds(), {
+                            padding: [50, 50]
+                        });
+                    }
                 }
             }
         });
@@ -82,6 +90,7 @@ $(function() {
     var currentCategory = $('body').data('category');
 
     if (currentProject && currentCategory) {
+        initialLoad = true;
         populateContributions(currentProject, currentCategory);
     }
 });
