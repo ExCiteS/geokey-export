@@ -13,7 +13,7 @@
 geokey-export
 =============
 
-Export data from GeoKey (v0.9+ only) into various formats.
+Export data from GeoKey into various formats.
 
 Currently supported formats:
 
@@ -22,6 +22,11 @@ Currently supported formats:
 
 Install
 -------
+
+geokey-export requires:
+
+- Python version 2.7
+- GeoKey version 0.9 or greater
 
 Install the extension from PyPI:
 
