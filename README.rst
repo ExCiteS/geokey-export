@@ -38,7 +38,7 @@ Or from cloned repository:
 
 Add the package to installed apps:
 
-.. code-block:: console
+.. code-block:: python
 
     INSTALLED_APPS += (
         ...
