@@ -1,9 +1,10 @@
-/* ***************************************************
+/* ****************************************************************************
  * Listens for a change of selected project and gets
  * all categories of it.
  *
- * @author Patrick Rickles (http://github.com/excites)
- * ***************************************************/
+ * @author Patrick Rickles (p.rickles@ucl.ac.uk)
+ * @author Julius Osokinas (j.osokinas@mappingforchange.org.uk)
+ * ***************************************************************************/
 
 $(function() {
     'use strict';
