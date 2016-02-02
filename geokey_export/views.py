@@ -46,9 +46,9 @@ class ExportExpiryMixin(object):
     def get_expiry(self, expiration_val):
         isoneoff = False
         expiration = None
-        if expiration_val == "one_off":
+        if expiration_val == 'one_off':
             isoneoff = True
-        elif expiration_val == "one_week":
+        elif expiration_val == 'one_week':
             expiration = timezone.now() + datetime.timedelta(days=7)
 
         return isoneoff, expiration
