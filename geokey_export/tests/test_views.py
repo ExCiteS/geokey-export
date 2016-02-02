@@ -8,6 +8,7 @@ from django.contrib.gis.geos import GEOSGeometry
 
 from rest_framework.test import APIRequestFactory
 
+from geokey.core.tests.helpers import render_helpers
 from geokey.users.tests.model_factories import UserFactory
 from geokey.projects.tests.model_factories import ProjectFactory
 from geokey.categories.tests.model_factories import CategoryFactory
@@ -53,8 +54,9 @@ class IndexPageTest(TestCase):
                 'exports': [export]
             }
         )
-        self.assertEqual(unicode(response.content), rendered)
         self.assertEqual(response.status_code, 200)
+        response = render_helpers.remove_csrf(unicode(response.content))
+        self.assertEqual(response, rendered)
 
 
 class ExportCreateTest(TestCase):
@@ -85,8 +87,9 @@ class ExportCreateTest(TestCase):
                 'projects': [project]
             }
         )
-        self.assertEqual(unicode(response.content), rendered)
         self.assertEqual(response.status_code, 200)
+        response = render_helpers.remove_csrf(unicode(response.content))
+        self.assertEqual(response, rendered)
 
     def test_post_with_anonymous(self):
         self.request.method = 'POST'
@@ -166,8 +169,9 @@ class ExportOverviewTest(TestCase):
                 'export': self.export
             }
         )
-        self.assertEqual(unicode(response.content), rendered)
         self.assertEqual(response.status_code, 200)
+        response = render_helpers.remove_csrf(unicode(response.content))
+        self.assertEqual(response, rendered)
 
     def test_post_with_anonymous(self):
         self.request.method = 'POST'
@@ -200,8 +204,9 @@ class ExportOverviewTest(TestCase):
                 'export': reference
             }
         )
-        self.assertEqual(unicode(response.content), rendered)
         self.assertEqual(response.status_code, 200)
+        response = render_helpers.remove_csrf(unicode(response.content))
+        self.assertEqual(response, rendered)
         self.assertEqual(reference.bounding_box.geom_type, 'Polygon')
         self.assertEqual(
             reference.bounding_box.json,
@@ -231,8 +236,9 @@ class ExportOverviewTest(TestCase):
                 'export': reference
             }
         )
-        self.assertEqual(unicode(response.content), rendered)
         self.assertEqual(response.status_code, 200)
+        response = render_helpers.remove_csrf(unicode(response.content))
+        self.assertEqual(response, rendered)
 
     def test_get_with_some_dude(self):
         user = UserFactory.create()
@@ -250,8 +256,9 @@ class ExportOverviewTest(TestCase):
                 'GEOKEY_VERSION': version.get_version()
             }
         )
-        self.assertEqual(unicode(response.content), rendered)
         self.assertEqual(response.status_code, 200)
+        response = render_helpers.remove_csrf(unicode(response.content))
+        self.assertEqual(response, rendered)
 
     def test_post_with_some_dude(self):
         user = UserFactory.create()
@@ -274,8 +281,9 @@ class ExportOverviewTest(TestCase):
                 'GEOKEY_VERSION': version.get_version()
             }
         )
-        self.assertEqual(unicode(response.content), rendered)
         self.assertEqual(response.status_code, 200)
+        response = render_helpers.remove_csrf(unicode(response.content))
+        self.assertEqual(response, rendered)
 
     def test_get_non_exisiting_export(self):
         user = UserFactory.create()
@@ -293,8 +301,9 @@ class ExportOverviewTest(TestCase):
                 'GEOKEY_VERSION': version.get_version(),
             }
         )
-        self.assertEqual(unicode(response.content), rendered)
         self.assertEqual(response.status_code, 200)
+        response = render_helpers.remove_csrf(unicode(response.content))
+        self.assertEqual(response, rendered)
 
     def test_post_non_exisiting_export(self):
         user = UserFactory.create()
@@ -314,8 +323,9 @@ class ExportOverviewTest(TestCase):
                 'GEOKEY_VERSION': version.get_version(),
             }
         )
-        self.assertEqual(unicode(response.content), rendered)
         self.assertEqual(response.status_code, 200)
+        response = render_helpers.remove_csrf(unicode(response.content))
+        self.assertEqual(response, rendered)
 
 
 class ExportDeleteTest(TestCase):
@@ -361,8 +371,9 @@ class ExportDeleteTest(TestCase):
                 'GEOKEY_VERSION': version.get_version()
             }
         )
-        self.assertEqual(unicode(response.content), rendered)
         self.assertEqual(response.status_code, 200)
+        response = render_helpers.remove_csrf(unicode(response.content))
+        self.assertEqual(response, rendered)
         self.assertEqual(Export.objects.count(), 1)
 
 
@@ -471,8 +482,9 @@ class ExportToRendererTest(TestCase):
                 'export': self.export
             }
         )
-        self.assertEqual(unicode(response.content), rendered)
         self.assertEqual(response.status_code, 200)
+        response = render_helpers.remove_csrf(unicode(response.content))
+        self.assertEqual(response, rendered)
 
     def test_get_geojson(self):
         response = self.view(
@@ -514,8 +526,9 @@ class ExportToRendererTest(TestCase):
                 'error': 'Not found.'
             }
         )
-        self.assertEqual(unicode(response.content), rendered)
         self.assertEqual(response.status_code, 200)
+        response = render_helpers.remove_csrf(unicode(response.content))
+        self.assertEqual(response, rendered)
 
     def test_get_nonexisting(self):
         response = self.view(
@@ -534,5 +547,6 @@ class ExportToRendererTest(TestCase):
                 'error': 'Not found.'
             }
         )
-        self.assertEqual(unicode(response.content), rendered)
         self.assertEqual(response.status_code, 200)
+        response = render_helpers.remove_csrf(unicode(response.content))
+        self.assertEqual(response, rendered)
