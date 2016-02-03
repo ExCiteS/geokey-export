@@ -24,7 +24,7 @@
                 {% for export in exports %}
                     <li>
                         <h3><a href="{% url 'geokey_export:export_overview' export.id %}">{{ export.name }}</a></h3>
-                        <p class="meta">Expiration: {{ export|expiry }}</p>
+                        <p class="meta">Created by {{ export.creator.display_name }} | Expiration: {{ export|expiry }}</p>
                     </li>
                 {% empty %}
                     <li>
