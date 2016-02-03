@@ -18,7 +18,8 @@ from geokey.contributions.renderer.kml import KmlRenderer
 
 from ..views import (
     IndexPage, ExportCreate, ExportOverview, ExportDelete,
-    ExportGetCategories, ExportGetContributions, ExportToRenderer
+    ExportGetProjectCategories, ExportGetProjectCategoryContributions,
+    ExportGetExportContributions, ExportToRenderer
 )
 from ..models import Export
 
@@ -377,14 +378,14 @@ class ExportDeleteTest(TestCase):
         self.assertEqual(Export.objects.count(), 1)
 
 
-class ExportGetCategoriesTest(TestCase):
+class ExportGetProjectCategoriesTest(TestCase):
     def setUp(self):
         self.project = ProjectFactory.create()
         CategoryFactory.create(**{'project': self.project})
 
-        self.view = ExportGetCategories.as_view()
+        self.view = ExportGetProjectCategories.as_view()
         self.url = reverse(
-            'geokey_export:export_get_categories',
+            'geokey_export:export_get_project_categories',
             kwargs={'project_id': self.project.id}
         )
         self.request = APIRequestFactory().get(self.url)
@@ -392,6 +393,20 @@ class ExportGetCategoriesTest(TestCase):
 
     def test_get_with_admin(self):
         self.request.user = self.project.creator
+        response = self.view(self.request, project_id=self.project.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_when_project_is_inactive(self):
+        self.request.user = self.project.creator
+        self.project.status = 'inactive'
+        self.project.save()
+        response = self.view(self.request, project_id=self.project.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_when_project_is_private(self):
+        self.request.user = self.project.creator
+        self.project.isprivate = True
+        self.project.save()
         response = self.view(self.request, project_id=self.project.id)
         self.assertEqual(response.status_code, 200)
 
@@ -407,14 +422,14 @@ class ExportGetCategoriesTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
 
-class ExportGetContributionsTest(TestCase):
+class ExportGetProjectCategoryContributionsTest(TestCase):
     def setUp(self):
         self.project = ProjectFactory.create()
         self.category = CategoryFactory.create(**{'project': self.project})
 
-        self.view = ExportGetContributions.as_view()
+        self.view = ExportGetProjectCategoryContributions.as_view()
         self.url = reverse(
-            'geokey_export:export_get_contributions',
+            'geokey_export:export_get_project_category_contributions',
             kwargs={
                 'project_id': self.project.id,
                 'category_id': self.category.id
@@ -425,6 +440,39 @@ class ExportGetContributionsTest(TestCase):
 
     def test_get_with_admin(self):
         self.request.user = self.project.creator
+        response = self.view(
+            self.request,
+            project_id=self.project.id,
+            category_id=self.category.id
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_when_project_is_inactive(self):
+        self.request.user = self.project.creator
+        self.project.status = 'inactive'
+        self.project.save()
+        response = self.view(
+            self.request,
+            project_id=self.project.id,
+            category_id=self.category.id
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_when_project_is_private(self):
+        self.request.user = self.project.creator
+        self.project.isprivate = True
+        self.project.save()
+        response = self.view(
+            self.request,
+            project_id=self.project.id,
+            category_id=self.category.id
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_when_category_is_inactive(self):
+        self.request.user = self.project.creator
+        self.category.status = 'inactive'
+        self.category.save()
         response = self.view(
             self.request,
             project_id=self.project.id,
@@ -459,6 +507,75 @@ class ExportGetContributionsTest(TestCase):
             project_id=self.project.id,
             category_id=self.category.id
         )
+        self.assertEqual(response.status_code, 404)
+
+
+class ExportGetExportContributionsTest(TestCase):
+    def setUp(self):
+        self.project = ProjectFactory.create()
+        self.category = CategoryFactory.create(**{'project': self.project})
+        self.export = ExportFactory.create(**{
+            'project': self.project,
+            'category': self.category
+        })
+
+        self.view = ExportGetExportContributions.as_view()
+        self.url = reverse(
+            'geokey_export:export_get_export_contributions',
+            kwargs={
+                'export_id': self.export.id
+            }
+        )
+        self.request = APIRequestFactory().get(self.url)
+        self.request.user = AnonymousUser()
+
+    def test_get_with_project_admin(self):
+        self.request.user = self.project.creator
+        response = self.view(self.request, export_id=self.export.id)
+        self.assertEqual(response.status_code, 403)
+
+    def test_get_with_export_creator(self):
+        self.request.user = self.export.creator
+        response = self.view(self.request, export_id=self.export.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_when_export_creator_is_not_project_admin_anymore(self):
+        self.request.user = self.export.creator
+        self.project.creator = UserFactory.create()
+        self.project.save()
+        response = self.view(self.request, export_id=self.export.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_when_project_is_inactive(self):
+        self.request.user = self.export.creator
+        self.project.status = 'inactive'
+        self.project.save()
+        response = self.view(self.request, export_id=self.export.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_when_project_is_private(self):
+        self.request.user = self.export.creator
+        self.project.isprivate = True
+        self.project.save()
+        response = self.view(self.request, export_id=self.export.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_when_category_is_inactive(self):
+        self.request.user = self.export.creator
+        self.category.status = 'inactive'
+        self.category.save()
+        response = self.view(self.request, export_id=self.export.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_with_some_dude(self):
+        self.request.user = UserFactory.create()
+        response = self.view(self.request, export_id=self.export.id)
+        self.assertEqual(response.status_code, 403)
+
+    def test_get_when_export_does_not_exist(self):
+        self.request.user = self.export.creator
+        self.export.delete()
+        response = self.view(self.request, export_id=self.export.id)
         self.assertEqual(response.status_code, 404)
 
 

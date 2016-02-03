@@ -3,7 +3,8 @@ from django.core.urlresolvers import reverse, resolve
 
 from ..views import (
     IndexPage, ExportOverview, ExportCreate, ExportDelete,
-    ExportGetCategories, ExportGetContributions, ExportToRenderer
+    ExportGetProjectCategories, ExportGetProjectCategoryContributions,
+    ExportGetExportContributions, ExportToRenderer
 )
 
 
@@ -44,10 +45,10 @@ class UrlTest(TestCase):
         self.assertEqual(resolved.func.func_name, ExportDelete.__name__)
         self.assertEqual(resolved.kwargs['export_id'], '1')
 
-    def test_export_get_categories(self):
+    def test_export_get_project_categories(self):
         self.assertEqual(
             reverse(
-                'geokey_export:export_get_categories',
+                'geokey_export:export_get_project_categories',
                 kwargs={'project_id': 1}
             ),
             '/admin/export/projects/1/categories/'
@@ -56,26 +57,42 @@ class UrlTest(TestCase):
         resolved = resolve('/admin/export/projects/1/categories/')
         self.assertEqual(
             resolved.func.func_name,
-            ExportGetCategories.__name__
+            ExportGetProjectCategories.__name__
         )
         self.assertEqual(resolved.kwargs['project_id'], '1')
 
-    def test_export_get_contributions(self):
+    def test_export_get_project_category_contributions(self):
         self.assertEqual(
             reverse(
-                'geokey_export:export_get_contributions',
+                'geokey_export:export_get_project_category_contributions',
                 kwargs={'project_id': 1, 'category_id': 2}
             ),
-            '/admin/export/projects/1/categories/2/'
+            '/admin/export/projects/1/categories/2/contributions/'
         )
 
-        resolved = resolve('/admin/export/projects/1/categories/2/')
+        resolved = resolve('/admin/export/projects/1/categories/2/contributions/')
         self.assertEqual(
             resolved.func.func_name,
-            ExportGetContributions.__name__
+            ExportGetProjectCategoryContributions.__name__
         )
         self.assertEqual(resolved.kwargs['project_id'], '1')
         self.assertEqual(resolved.kwargs['category_id'], '2')
+
+    def test_export_get_export_contributions(self):
+        self.assertEqual(
+            reverse(
+                'geokey_export:export_get_export_contributions',
+                kwargs={'export_id': 1}
+            ),
+            '/admin/export/1/contributions/'
+        )
+
+        resolved = resolve('/admin/export/1/contributions/')
+        self.assertEqual(
+            resolved.func.func_name,
+            ExportGetExportContributions.__name__
+        )
+        self.assertEqual(resolved.kwargs['export_id'], '1')
 
     def test_geojson(self):
         self.assertEqual(

@@ -116,7 +116,7 @@ class ExportCreate(LoginRequiredMixin, ExportExpiryMixin, TemplateView):
         return redirect('geokey_export:export_overview', export_id=export.id)
 
 
-class ExportGetCategories(LoginRequiredMixin, APIView):
+class ExportGetProjectCategories(LoginRequiredMixin, APIView):
 
     @handle_exceptions_for_ajax
     def get(self, request, project_id):
@@ -129,7 +129,7 @@ class ExportGetCategories(LoginRequiredMixin, APIView):
         return Response(categories_dict, status=status.HTTP_200_OK)
 
 
-class ExportGetContributions(GZipView, GeoJsonView):
+class ExportGetProjectCategoryContributions(GZipView, GeoJsonView):
 
     @handle_exceptions_for_ajax
     def get(self, request, project_id, category_id):
@@ -145,6 +145,39 @@ class ExportGetContributions(GZipView, GeoJsonView):
         )
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ExportGetExportContributions(GZipView, GeoJsonView):
+
+    @handle_exceptions_for_ajax
+    def get(self, request, export_id):
+        try:
+            export = Export.objects.get(pk=export_id)
+
+            if export.creator != self.request.user:
+                return Response(
+                    {'error': 'You must be creator of the export.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            else:
+                contributions = export.project.get_all_contributions(
+                    self.request.user).filter(category=export.category)
+
+                serializer = ContributionSerializer(
+                    contributions,
+                    many=True,
+                    context={
+                        'user': self.request.user,
+                        'project': export.project
+                    }
+                )
+
+                return Response(serializer.data, status=status.HTTP_200_OK)
+        except Export.DoesNotExist:
+            return Response(
+                {'error': 'Export not found.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
 
 class ExportObjectMixin(object):

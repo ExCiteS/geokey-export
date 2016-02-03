@@ -8,9 +8,11 @@ from views import (
     ExportCreate,
     ExportDelete,
     ExportToRenderer,
-    ExportGetCategories,
-    ExportGetContributions
+    ExportGetExportContributions,
+    ExportGetProjectCategories,
+    ExportGetProjectCategoryContributions
 )
+
 
 datapatterns = [
     url(
@@ -31,6 +33,10 @@ urlpatterns = [
         ExportOverview.as_view(),
         name='export_overview'),
     url(
+        r'^admin/export/(?P<export_id>[0-9]+)/contributions/$',
+        ExportGetExportContributions.as_view(),
+        name='export_get_export_contributions'),
+    url(
         r'^admin/export/(?P<export_id>[0-9]+)/delete/$',
         ExportDelete.as_view(),
         name='export_delete'),
@@ -40,12 +46,12 @@ urlpatterns = [
         name='export_create'),
     url(
         r'^admin/export/projects/(?P<project_id>[0-9]+)/categories/$',
-        ExportGetCategories.as_view(),
-        name='export_get_categories'),
+        ExportGetProjectCategories.as_view(),
+        name='export_get_project_categories'),
     url(
-        r'^admin/export/projects/(?P<project_id>[0-9]+)/categories/(?P<category_id>[0-9]+)/$',
-        ExportGetContributions.as_view(),
-        name='export_get_contributions'),
+        r'^admin/export/projects/(?P<project_id>[0-9]+)/categories/(?P<category_id>[0-9]+)/contributions/$',
+        ExportGetProjectCategoryContributions.as_view(),
+        name='export_get_project_category_contributions'),
     url(
         r'^', include(datapatterns))
 ]

@@ -11,30 +11,27 @@ $(function() {
 
     var initialLoad = false;
 
-    function populateContributions(project, category) {
+    function populateContributions(contributions) {
         var geometry = $('#geometry').val();
+        var length = 0;
 
-        $.get('/admin/export/projects/' + project + '/categories/' + category, function(contributions) {
-            var length = 0;
+        if (window.map && layer instanceof L.FeatureGroup && contributions) {
+            L.geoJson(contributions, {
+                onEachFeature: function() {
+                    length++;
+                }
+            }).addTo(layer);
 
-            if (window.map && layer instanceof L.FeatureGroup && contributions) {
-                L.geoJson(contributions, {
-                    onEachFeature: function() {
-                        length++;
-                    }
-                }).addTo(layer);
-
-                if (length > 0) {
-                    if (initialLoad && geometry) {
-                        return;
-                    } else {
-                        window.map.fitBounds(layer.getBounds(), {
-                            padding: [50, 50]
-                        });
-                    }
+            if (length > 0) {
+                if (initialLoad && geometry) {
+                    return;
+                } else {
+                    window.map.fitBounds(layer.getBounds(), {
+                        padding: [50, 50]
+                    });
                 }
             }
-        });
+        }
     }
 
     var projectSelect = $('select[name=project]');
@@ -77,7 +74,9 @@ $(function() {
         }
 
         if (projectId && categoryId) {
-            populateContributions(projectId, categoryId);
+            $.get('/admin/export/projects/' + projectId + '/categories/' + categoryId + '/contributions/', function(contributions) {
+                populateContributions(contributions);
+            });
         }
     });
 
@@ -87,11 +86,13 @@ $(function() {
         window.map.addLayer(layer);
     }
 
-    var currentProject = $('body').data('project');
-    var currentCategory = $('body').data('category');
+    var exportId = $('body').data('export');
 
-    if (currentProject && currentCategory) {
+    if (exportId) {
         initialLoad = true;
-        populateContributions(currentProject, currentCategory);
+
+        $.get('/admin/export/' + exportId + '/contributions/', function(contributions) {
+            populateContributions(contributions);
+        });
     }
 });

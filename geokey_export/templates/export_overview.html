@@ -2,6 +2,7 @@
 {% load export_tags %}
 
 {% block bodydata %}
+data-export="{{ export.id }}"
 data-project="{{ export.project.id }}"
 data-category="{{ export.category.id }}"
 {% endblock %}
