@@ -225,7 +225,7 @@ class ExportOverview(LoginRequiredMixin, ExportExpiryMixin, ExportObjectMixin,
 
             if bounding_box is not None and len(bounding_box) > 0:
                 export.bounding_box = GEOSGeometry(bounding_box)
-            else:
+            elif bounding_box == '':  # It's in the request but empty
                 export.bounding_box = None
 
             export.save()
