@@ -21,7 +21,11 @@ from geokey import version
 from geokey.core.decorators import handle_exceptions_for_ajax
 from geokey.projects.models import Project
 from geokey.categories.models import Category
-from geokey.contributions.serializers import ContributionSerializer
+from geokey.contributions.models import MediaFile
+from geokey.contributions.serializers import (
+    ContributionSerializer,
+    FileSerializer
+)
 from geokey.contributions.views.observations import GZipView, GeoJsonView
 from geokey.contributions.renderer.geojson import GeoJsonRenderer
 from geokey.contributions.renderer.kml import KmlRenderer
@@ -300,6 +304,25 @@ class ExportToRenderer(View):
                 many=True,
                 context={'user': export.creator, 'project': export.project}
             )
+
+            protocol = 'https' if request.is_secure() else 'http'
+            url = '%s://%s' % (protocol, request.get_host())
+
+            for contribution in serializer.data:
+                media = FileSerializer(
+                    MediaFile.objects.filter(
+                        contribution__id=contribution['id']
+                    ),
+                    many=True,
+                    context={'user': export.creator, 'project': export.project}
+                ).data
+
+                for file in media:
+                    file['url'] = url + file['url']
+                    file['thumbnail_url'] = url + file['thumbnail_url']
+
+                contribution['media'] = media
+
             content = renderer.render(serializer.data)
 
             if export.isoneoff:
