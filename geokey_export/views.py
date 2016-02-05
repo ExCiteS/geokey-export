@@ -318,8 +318,10 @@ class ExportToRenderer(View):
                 ).data
 
                 for file in media:
-                    file['url'] = url + file['url']
-                    file['thumbnail_url'] = url + file['thumbnail_url']
+                    if not file['url'].startswith('http'):
+                        file['url'] = url + file['url']
+                    if not file['thumbnail_url'].startswith('http'):
+                        file['thumbnail_url'] = url + file['thumbnail_url']
 
                 contribution['media'] = media
 
