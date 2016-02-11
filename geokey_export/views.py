@@ -21,10 +21,11 @@ from geokey import version
 from geokey.core.decorators import handle_exceptions_for_ajax
 from geokey.projects.models import Project
 from geokey.categories.models import Category
-from geokey.contributions.models import MediaFile
+from geokey.contributions.models import MediaFile, Comment
 from geokey.contributions.serializers import (
     ContributionSerializer,
-    FileSerializer
+    FileSerializer,
+    CommentSerializer
 )
 from geokey.contributions.views.observations import GZipView, GeoJsonView
 from geokey.contributions.renderer.geojson import GeoJsonRenderer
@@ -324,6 +325,14 @@ class ExportToRenderer(View):
                         file['thumbnail_url'] = url + file['thumbnail_url']
 
                 contribution['media'] = media
+
+                contribution['comments'] = CommentSerializer(
+                    Comment.objects.filter(
+                        commentto__id=contribution['id']
+                    ),
+                    many=True,
+                    context={'user': export.creator, 'project': export.project}
+                ).data
 
             content = renderer.render(serializer.data)
 
