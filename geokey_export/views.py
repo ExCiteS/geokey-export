@@ -28,8 +28,8 @@ from geokey.contributions.serializers import (
     CommentSerializer
 )
 from geokey.contributions.views.observations import GZipView, GeoJsonView
-from geokey.contributions.renderer.geojson import GeoJsonRenderer
-from geokey.contributions.renderer.kml import KmlRenderer
+from geokey.contributions.renderers.geojson import GeoJsonRenderer
+from geokey.contributions.renderers.kml import KmlRenderer
 
 from .models import Export
 
