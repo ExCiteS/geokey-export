@@ -328,7 +328,8 @@ class ExportToRenderer(View):
 
                 contribution['comments'] = CommentSerializer(
                     Comment.objects.filter(
-                        commentto__id=contribution['id']
+                        commentto__id=contribution['id'],
+                        respondsto=None
                     ),
                     many=True,
                     context={'user': export.creator, 'project': export.project}
