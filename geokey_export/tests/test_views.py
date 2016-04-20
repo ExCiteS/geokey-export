@@ -13,8 +13,8 @@ from geokey.users.tests.model_factories import UserFactory
 from geokey.projects.tests.model_factories import ProjectFactory
 from geokey.categories.tests.model_factories import CategoryFactory
 from geokey import version
-from geokey.contributions.renderer.geojson import GeoJsonRenderer
-from geokey.contributions.renderer.kml import KmlRenderer
+from geokey.contributions.renderers.geojson import GeoJsonRenderer
+from geokey.contributions.renderers.kml import KmlRenderer
 
 from ..views import (
     IndexPage, ExportCreate, ExportOverview, ExportDelete,
