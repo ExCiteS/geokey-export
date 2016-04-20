@@ -26,9 +26,7 @@ Install
 geokey-export requires:
 
 - Python version 2.7
-- GeoKey version 0.9 or greater
-
-Please be aware that export of media files and comments for KML is only available on GeoKey version 0.10 or later.
+- GeoKey version 1.0
 
 Install the extension from PyPI:
 
