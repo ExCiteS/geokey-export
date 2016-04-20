@@ -1,7 +1,10 @@
+"""GeoKey settings for Travis CI."""
+
 import os.path
 from geokey.core.settings.dev import *
 
-DEFAULT_FROM_EMAIL = 'sender@example.com'
+
+DEFAULT_FROM_EMAIL = 'geokey@travis-ci.org'
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 
 SECRET_KEY = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
