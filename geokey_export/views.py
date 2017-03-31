@@ -30,7 +30,7 @@ from geokey.contributions.serializers import (
 from geokey.contributions.views.observations import GZipView, GeoJsonView
 from geokey.contributions.renderers.geojson import GeoJsonRenderer
 from geokey.contributions.renderers.kml import KmlRenderer
-from renders import CSVRenderer
+from renderers import CSVRenderer
 
 from .models import Export
 
