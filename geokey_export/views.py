@@ -30,6 +30,7 @@ from geokey.contributions.serializers import (
 from geokey.contributions.views.observations import GZipView, GeoJsonView
 from geokey.contributions.renderers.geojson import GeoJsonRenderer
 from geokey.contributions.renderers.kml import KmlRenderer
+from renders import CSVRenderer
 
 from .models import Export
 
@@ -282,8 +283,15 @@ class ExportToRenderer(View):
         return context
 
     def get(self, request, urlhash, format=None):
-        context = self.get_context(request, urlhash)
-        export = context.get('export')
+        if '-comments' in urlhash:
+            urlhash = urlhash[:-9]
+            context = self.get_context(request, urlhash)
+            export = context.get('export')
+            comments = True
+        else:
+            context = self.get_context(request, urlhash)
+            export = context.get('export')
+            comments = False
 
         if export and format:
             content_type = 'text/plain'
@@ -292,6 +300,8 @@ class ExportToRenderer(View):
                 renderer = GeoJsonRenderer()
             elif format == 'kml':
                 renderer = KmlRenderer()
+            elif format == 'csv':
+                renderer = CSVRenderer()
 
             contributions = export.project.get_all_contributions(
                 export.creator).filter(category=export.category)
@@ -335,7 +345,10 @@ class ExportToRenderer(View):
                     context={'user': export.creator, 'project': export.project}
                 ).data
 
-            content = renderer.render(serializer.data)
+            if comments:
+                content = renderer.render_comments(serializer.data)
+            else:
+                content = renderer.render(serializer.data)
 
             if export.isoneoff:
                 export.expire()
