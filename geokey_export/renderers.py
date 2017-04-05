@@ -9,21 +9,40 @@ class CSVRenderer(BaseRenderer):
     media_type = 'text/csv'
     format = 'csv'
 
+    def render_mediafiles(self, data):
+        """Create the csv file all the comments for all the contributions."""
+        media_keys = ['file_id', 'file_type', 'contribution_id', 'creator',
+            'creator_id', 'created_at', 'url']
+        mediafiles_csv = [';'.join(media_keys)]
+        for i in range(len(data)):
+            obs_id = data[i]['id']
+            if data[i]['media']:
+                media = data[i]['media']
+                for m in media:
+                    mediafiles_csv.append(get_mediafiles(obs_id, m, media_keys))
+                    print "media id", m['id']
+                    print "media url", m['url']
+
+        return '\n'.join(mediafiles_csv)
+
     def render_comments(self, data):
         """Create the csv file all the comments for all the contributions."""
-        keys = ['comment_id', 'contribution_id', 'creator', 'creator_id',
+        comment_keys = ['comment_id', 'contribution_id', 'creator', 'creator_id',
             'created_at', 'respondsto', 'text']
-        all_comments = [';'.join(keys)]
+        comments_csv = [';'.join(comment_keys)]
         for i in range(len(data)):
             obs_id = data[i]['id']
             for cm in data[i]['comments']:
-                all_comments.append(get_info_comments(obs_id, cm, keys))
+                comments_csv.append(get_info_comments(obs_id, cm, comment_keys))
                 responses = cm['responses']
                 if responses != []:
                     for rp in range(len(responses)):
-                        all_comments.append(get_info_comments(obs_id, responses[rp], keys))
-        comments_text = '\n'.join(all_comments)
-        return comments_text
+                        comments_csv.append(get_info_comments(
+                            obs_id,
+                            responses[rp],
+                            comment_keys))
+
+        return '\n'.join(comments_csv)
 
     def render_contribution(self, data):
         """Create the csv file all the contributions."""
@@ -55,13 +74,50 @@ def get_fields(data):
     return keys
 
 
+def get_mediafiles(obs_id, mediafile, keys):
+    """Create list for each of the comment in the observation.
+
+    Parameters:
+        obs_id: int
+            observation unique identifier number
+        mediafile: dic
+            contains all the observation for a category
+        keys: list
+            key which represent the field values for the csv file
+
+    returns:
+        csw_row: str
+            media files values contactenated with ';'
+    """
+
+    if mediafile:
+        mediafile_row = []
+        for key in keys:
+            if key == 'file_id':
+                mediafile_row.append(str(mediafile['id']))
+            if key == 'contribution_id':
+                mediafile_row.append(str(obs_id))
+            if key == 'creator':
+                mediafile_row.append(str(mediafile[key]['display_name']))
+            if key == 'creator_id':
+                mediafile_row.append(str(mediafile['creator']['id']))
+            if key == 'url':
+                mediafile_row.append(str(mediafile[key]))
+            if key == 'created_at':
+                mediafile_row.append(str(mediafile[key]))
+            if key == 'file_type':
+                mediafile_row.append(str(mediafile[key]))
+
+        return ';'.join(mediafile_row)
+
+
 def get_info_comments(obs_id, comment, keys):
     """Create list for each of the comment in the observation.
 
     Parameters:
         obs_id: int
             observation unique identifier number
-        comment: dictionary
+        comment: dic
             contains all the observation for a category
         keys: list
             key which represent the field values for the csv file
