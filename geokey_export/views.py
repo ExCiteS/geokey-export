@@ -283,15 +283,24 @@ class ExportToRenderer(View):
         return context
 
     def get(self, request, urlhash, format=None):
+
         if '-comments' in urlhash:
             urlhash = urlhash[:-9]
             context = self.get_context(request, urlhash)
             export = context.get('export')
             comments = True
+            mediafiles = False
+        elif '-mediafiles' in urlhash:
+            urlhash = urlhash[:-11]
+            context = self.get_context(request, urlhash)
+            export = context.get('export')
+            mediafiles = True
+            comments = False
         else:
             context = self.get_context(request, urlhash)
             export = context.get('export')
             comments = False
+            mediafiles =  False
 
         if export and format:
             content_type = 'text/plain'
@@ -347,6 +356,8 @@ class ExportToRenderer(View):
 
             if comments:
                 content = renderer.render_comments(serializer.data)
+            elif mediafiles:
+                content = renderer.render_mediafiles(serializer.data)
             else:
                 content = renderer.render(serializer.data)
 
