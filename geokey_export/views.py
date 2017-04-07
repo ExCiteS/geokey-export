@@ -300,7 +300,7 @@ class ExportToRenderer(View):
             context = self.get_context(request, urlhash)
             export = context.get('export')
             comments = False
-            mediafiles =  False
+            mediafiles = False
 
         if export and format:
             content_type = 'text/plain'
