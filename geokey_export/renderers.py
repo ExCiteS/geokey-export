@@ -43,11 +43,13 @@ class CSVRenderer(BaseRenderer):
 
     def render_contribution(self, data):
         """Create the csv file all the contributions."""
-        prop_keys = get_fields(data)
-        keys.extend(prop_keys)
+        keys_obs = keys
+        prop_keys = get_fields(data, keys_obs)
+        keys_obs.extend(prop_keys)
+
         all_csv_rows = [';'.join(keys)]
         for i in range(len(data)):
-            all_csv_rows.append(create_observation_row(data[i], keys))
+            all_csv_rows.append(create_observation_row(data[i], keys_obs))
 
         return '\n'.join(all_csv_rows)
 

@@ -20,7 +20,7 @@ def get_responses(obs_id, comment, length):
     return responses
 
 
-def get_fields(data):
+def get_fields(data, keys):
     """Create list of all the existing fields for this observation."""
     keys_fields = []
     for i in range(len(data)):
@@ -28,8 +28,9 @@ def get_fields(data):
             properties = data[i]['properties']
             fields = [prop_keys for prop_keys in properties.iterkeys()]
             for field in fields:
-                if field not in keys_fields:
+                if field not in keys:
                     keys_fields.append(field)
+
     return keys_fields
 
 
