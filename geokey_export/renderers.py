@@ -2,6 +2,7 @@
 
 from rest_framework.renderers import BaseRenderer
 from django.contrib.gis.geos import GEOSGeometry
+from .base import media_keys, comment_keys, keys
 
 
 class CSVRenderer(BaseRenderer):
@@ -11,8 +12,8 @@ class CSVRenderer(BaseRenderer):
 
     def render_mediafiles(self, data):
         """Create the csv file all the comments for all the contributions."""
-        media_keys = ['file_id', 'file_type', 'contribution_id', 'creator',
-            'creator_id', 'created_at', 'url']
+        # media_keys = ['file_id', 'file_type', 'contribution_id', 'creator',
+        #     'creator_id', 'created_at', 'url']
         mediafiles_csv = [';'.join(media_keys)]
         for i in range(len(data)):
             obs_id = data[i]['id']
@@ -20,33 +21,22 @@ class CSVRenderer(BaseRenderer):
                 media = data[i]['media']
                 for m in media:
                     mediafiles_csv.append(get_mediafiles(obs_id, m, media_keys))
-                    print "media id", m['id']
-                    print "media url", m['url']
-
         return '\n'.join(mediafiles_csv)
 
     def render_comments(self, data):
         """Create the csv file all the comments for all the contributions."""
-        comment_keys = ['comment_id', 'contribution_id', 'creator', 'creator_id',
-            'created_at', 'respondsto', 'text']
         comments_csv = [';'.join(comment_keys)]
         for i in range(len(data)):
             obs_id = data[i]['id']
             for cm in data[i]['comments']:
-                comments_csv.append(get_info_comments(obs_id, cm, comment_keys))
+                comments_csv.append(get_info_comment(obs_id, cm, comment_keys))
                 responses = cm['responses']
-                if responses != []:
-                    for rp in range(len(responses)):
-                        comments_csv.append(get_info_comments(
-                            obs_id,
-                            responses[rp],
-                            comment_keys))
+                comments_csv.extend(get_responses(obs_id, cm, len(responses)))
 
         return '\n'.join(comments_csv)
 
     def render_contribution(self, data):
         """Create the csv file all the contributions."""
-        keys = ['geom', 'id', 'creator', 'creator_id', 'created_at', 'status']
         prop_keys = get_fields(data)
         keys.extend(prop_keys)
         all_csv_rows = [';'.join(keys)]
@@ -60,6 +50,21 @@ class CSVRenderer(BaseRenderer):
         rendered = self.render_contribution(data)
 
         return rendered
+
+
+def get_responses(obs_id, comment, length):
+    """Get all the responses existing in a comment."""
+    responses = []
+    if comment['responses']:
+        com = comment['responses']
+        for rep in range(length):
+            responses.append(get_info_comment(obs_id, com[rep], comment_keys))
+            responses.extend(get_responses(
+                obs_id,
+                com[rep],
+                len(com[rep]['responses']))
+            )
+    return responses
 
 
 def get_fields(data):
@@ -89,7 +94,6 @@ def get_mediafiles(obs_id, mediafile, keys):
         csw_row: str
             media files values contactenated with ';'
     """
-
     if mediafile:
         mediafile_row = []
         for key in keys:
@@ -111,7 +115,7 @@ def get_mediafiles(obs_id, mediafile, keys):
         return ';'.join(mediafile_row)
 
 
-def get_info_comments(obs_id, comment, keys):
+def get_info_comment(obs_id, comment, keys):
     """Create list for each of the comment in the observation.
 
     Parameters:
@@ -142,7 +146,10 @@ def get_info_comments(obs_id, comment, keys):
             if key == 'created_at':
                 comment_row.append(str(comment[key]))
             if key == 'respondsto':
-                comment_row.append(str(comment[key]))
+                if comment[key]:
+                    comment_row.append(str(comment[key]))
+                else:
+                    comment_row.append('')
         comment_row = ';'.join(comment_row)
         return comment_row
 
