@@ -29,6 +29,16 @@
                         <a href="{% url 'geokey_export:export_to_renderer' export.urlhash %}.json">{{ export.urlhash }}.json</a>
                     </td>
                 </tr>
+
+                <tr>
+                    <td>CSV</td>
+                    <td>
+                        <a href="{% url 'geokey_export:export_to_renderer' export.urlhash %}.csv">{{ export.urlhash }}.csv</a>
+                        <a href="{% url 'geokey_export:export_to_renderer' export.urlhash %}-comments.csv">{{ export.urlhash }}-comments.csv</a>
+                        <a href="{% url 'geokey_export:export_to_renderer' export.urlhash %}-mediafiles.csv">{{ export.urlhash }}-mediafiles.csv</a>
+                    </td>
+
+                </tr>
             </table>
         </div>
     </div>

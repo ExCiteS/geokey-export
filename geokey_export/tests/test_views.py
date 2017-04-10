@@ -22,6 +22,7 @@ from ..views import (
     ExportGetExportContributions, ExportToRenderer
 )
 from ..models import Export
+from ..renderers import CSVRenderer
 
 from .model_factories import ExportFactory
 
@@ -669,3 +670,36 @@ class ExportToRendererTest(TestCase):
         self.assertEqual(response.status_code, 200)
         response = render_helpers.remove_csrf(unicode(response.content))
         self.assertEqual(response, rendered)
+
+    def test_get_csv(self):
+        response = self.view(
+            self.request,
+            urlhash=self.export.urlhash,
+            format='csv'
+        )
+
+        rendered = CSVRenderer().render([])
+        self.assertEqual(unicode(response.content), rendered)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_csv_comments(self):
+        response = self.view(
+            self.request,
+            urlhash=self.export.urlhash + '-comments',
+            format='csv'
+        )
+
+        rendered = CSVRenderer().render_comments([])
+        self.assertEqual(unicode(response.content), rendered)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_csv_mediafiles(self):
+        response = self.view(
+            self.request,
+            urlhash=self.export.urlhash + '-mediafiles',
+            format='csv'
+        )
+
+        rendered = CSVRenderer().render_mediafiles([])
+        self.assertEqual(unicode(response.content), rendered)
+        self.assertEqual(response.status_code, 200)

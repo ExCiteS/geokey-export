@@ -20,7 +20,7 @@ datapatterns = [
         ExportToRenderer.as_view(),
         name='export_to_renderer')
 ]
-datapatterns = format_suffix_patterns(datapatterns, allowed=['json', 'kml'])
+datapatterns = format_suffix_patterns(datapatterns, allowed=['json', 'kml','csv'])
 
 
 urlpatterns = [
