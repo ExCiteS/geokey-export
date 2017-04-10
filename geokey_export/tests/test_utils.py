@@ -45,7 +45,7 @@ class UtilsTest(TestCase):
                 ('review_status', None), ('responses', [])
             ]
         ],
-        'properties': {u'surname': u'pepepo5'},
+        'properties': {u'country': u'Island'},
         'meta':
             {
             'status': u'active',
@@ -80,13 +80,13 @@ class UtilsTest(TestCase):
         self.comment_keys = comment_keys
 
     def test_get_fields(self):
+        """Test for get_fields method."""
+        headers = get_fields(self.data, self.keys)
 
-        header = get_fields(self.data, self.keys)
-
-        self.assertTrue('surname' in header)
+        self.assertTrue('country' in headers)
 
     def test_get_info_comment(self):
-
+        """Test for get_info_method."""
         comments = {
             'id': 153,
             'respondsto': None,
@@ -106,7 +106,7 @@ class UtilsTest(TestCase):
         self.assertTrue(str(comments['creator']['id']) in comment_txt)
 
     def test_get_responses(self):
-
+        """Test for get_responses."""
         comments2 = {
             'id': 153,
             'respondsto': None,
@@ -155,7 +155,7 @@ class UtilsTest(TestCase):
         self.assertFalse(str('c.grillo_test') in responses[0])
 
     def test_create_observation_row(self):
-
+        """Test for create_observation_row."""
         observation_txt = create_observation_row(self.data[0], self.keys)
 
         wkt_coordinates = 'POINT (-3.8671875000000000 15.7922535703624458)'
@@ -165,6 +165,7 @@ class UtilsTest(TestCase):
         self.assertTrue(display_name in observation_txt)
 
     def test_get_mediafiles(self):
+        """Test for get_mediafiles."""
 
         mediafiles = [{
             "id": 86,
@@ -198,7 +199,7 @@ class UtilsTest(TestCase):
             self.obs_id,
             mediafiles[0],
             media_keys)
-        print "mediafiles_txt", mediafiles_txt
+
         self.assertTrue(str(mediafiles[0]['id']) in mediafiles_txt)
         self.assertTrue(mediafiles[0]['url'] in mediafiles_txt)
         self.assertFalse(mediafiles[1]['url'] in mediafiles_txt)
@@ -210,7 +211,6 @@ class UtilsTest(TestCase):
             mediafiles[1],
             media_keys)
 
-        print "mediafiles_txt2", mediafiles_txt
         self.assertTrue(str(mediafiles[1]['id']) in mediafiles_txt2)
         self.assertTrue(mediafiles[1]['url'] in mediafiles_txt2)
         self.assertFalse(mediafiles[0]['url'] in mediafiles_txt2)
