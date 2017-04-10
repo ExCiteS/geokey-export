@@ -77,7 +77,7 @@ def get_info_comment(obs_id, comment, keys):
         obs_id: int
             observation unique identifier number
         comment: dic
-            contains all the observation for a category
+            contains all the values a comment
         keys: list
             key which represent the field values for the csv file
 
