@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from ..base import media_keys, comment_keys, keys
+from ..base import media_keys, comment_keys, keys_obs
 from ..utils import (
     get_responses,
     get_fields,
@@ -76,12 +76,12 @@ class UtilsTest(TestCase):
         }
         ]
         self.obs_id = self.data[0]['id']
-        self.keys = keys
+        self.keys = keys_obs
         self.comment_keys = comment_keys
 
     def test_get_fields(self):
         """Test for get_fields method."""
-        headers = get_fields(self.data, self.keys)
+        headers = get_fields(self.data)
 
         self.assertTrue('country' in headers)
 
