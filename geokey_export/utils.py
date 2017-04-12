@@ -2,7 +2,7 @@
 
 from django.contrib.gis.geos import GEOSGeometry
 
-from .base import comment_keys
+from .base import comment_keys, keys_obs
 
 
 def get_responses(obs_id, comment, length):
@@ -20,15 +20,15 @@ def get_responses(obs_id, comment, length):
     return responses
 
 
-def get_fields(data, keys):
+def get_fields(data):
     """Create list of all the existing fields for this observation."""
-    keys_fields = []
+    keys_fields = keys_obs
     for i in range(len(data)):
         if data[i]['properties']:
             properties = data[i]['properties']
             fields = [prop_keys for prop_keys in properties.iterkeys()]
             for field in fields:
-                if field not in keys:
+                if field not in keys_fields:
                     keys_fields.append(field)
 
     return keys_fields

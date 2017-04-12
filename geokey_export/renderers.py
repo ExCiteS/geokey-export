@@ -1,7 +1,7 @@
 """GeoJSON renderer."""
 
 from rest_framework.renderers import BaseRenderer
-from .base import media_keys, comment_keys, keys
+from .base import media_keys, comment_keys
 from .utils import (
     get_responses,
     get_fields,
@@ -43,11 +43,9 @@ class CSVRenderer(BaseRenderer):
 
     def render_contribution(self, data):
         """Create the csv file all the contributions."""
-        keys_obs = keys
-        prop_keys = get_fields(data, keys_obs)
-        keys_obs.extend(prop_keys)
+        keys_obs = get_fields(data)
 
-        all_csv_rows = [';'.join(keys)]
+        all_csv_rows = [';'.join(keys_obs)]
         for i in range(len(data)):
             all_csv_rows.append(create_observation_row(data[i], keys_obs))
 
