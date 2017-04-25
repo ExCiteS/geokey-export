@@ -22,7 +22,7 @@ def get_responses(obs_id, comment, length):
 
 def get_fields(data):
     """Create list of all the existing fields for this observation."""
-    keys_fields = keys_obs
+    keys_fields = ['geom', 'id', 'creator', 'creator_id', 'created_at', 'status']
     for i in range(len(data)):
         if data[i]['properties']:
             properties = data[i]['properties']

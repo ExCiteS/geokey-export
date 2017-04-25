@@ -18,8 +18,6 @@ class CSVRenderer(BaseRenderer):
 
     def render_mediafiles(self, data):
         """Create the csv file all the comments for all the contributions."""
-        # media_keys = ['file_id', 'file_type', 'contribution_id', 'creator',
-        #     'creator_id', 'created_at', 'url']
         mediafiles_csv = [';'.join(media_keys)]
         for i in range(len(data)):
             obs_id = data[i]['id']
@@ -44,7 +42,6 @@ class CSVRenderer(BaseRenderer):
     def render_contribution(self, data):
         """Create the csv file all the contributions."""
         keys_obs = get_fields(data)
-
         all_csv_rows = [';'.join(keys_obs)]
         for i in range(len(data)):
             all_csv_rows.append(create_observation_row(data[i], keys_obs))
