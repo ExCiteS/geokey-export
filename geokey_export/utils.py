@@ -96,14 +96,14 @@ def get_info_comment(obs_id, comment, keys):
                 comment_row.append(str(comment['creator']['id']))
             if key == 'text':
                 try:
-                    comment_row.append(comment[key].encode('latin-1'))
+                    comment_row.append(comment[key].encode('utf-8'))
                 except AttributeError:
                     comment_row.append(str(comment[key]))
             if key == 'created_at':
                 comment_row.append(str(comment[key]))
             if key == 'respondsto':
                 try:
-                    comment_row.append(comment[key].encode('latin-1'))
+                    comment_row.append(comment[key].encode('utf-8'))
                 except AttributeError:
                     comment_row.append(str(comment[key]))
                 except:
@@ -141,7 +141,7 @@ def create_observation_row(data, keys):
             csv_row.append(str(data['id']))
         else:
             try:
-                csv_row.append(data['properties'][key].encode('latin-1'))
+                csv_row.append(data['properties'][key].encode('utf-8'))
             except AttributeError:
                 csv_row.append(str(data['properties'][key]))
             except:
