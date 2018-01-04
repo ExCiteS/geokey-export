@@ -30,7 +30,6 @@ def get_fields(data):
             for field in fields:
                 if field not in keys_fields:
                     keys_fields.append(field)
-
     return keys_fields
 
 
@@ -66,8 +65,7 @@ def get_mediafiles(obs_id, mediafile, keys):
                 mediafile_row.append(str(mediafile[key]))
             if key == 'file_type':
                 mediafile_row.append(str(mediafile[key]))
-
-        return ';'.join(mediafile_row)
+        return mediafile_row
 
 
 def get_info_comment(obs_id, comment, keys):
@@ -97,15 +95,19 @@ def get_info_comment(obs_id, comment, keys):
             if key == 'creator_id':
                 comment_row.append(str(comment['creator']['id']))
             if key == 'text':
-                comment_row.append(str(comment[key]))
+                try:
+                    comment_row.append(comment[key].encode('latin-1'))
+                except AttributeError:
+                    comment_row.append(str(comment[key]))
             if key == 'created_at':
                 comment_row.append(str(comment[key]))
             if key == 'respondsto':
-                if comment[key]:
+                try:
+                    comment_row.append(comment[key].encode('latin-1'))
+                except AttributeError:
                     comment_row.append(str(comment[key]))
-                else:
+                except:
                     comment_row.append('')
-        comment_row = ';'.join(comment_row)
         return comment_row
 
 
@@ -113,7 +115,7 @@ def create_observation_row(data, keys):
     """Create list of the observation values specified on keys.
 
     Parameters:
-        data: serilized list
+        data: serialized list
             contains all the observation for a category
         keys: list
             key which represent the field values for the csv file
@@ -139,8 +141,9 @@ def create_observation_row(data, keys):
             csv_row.append(str(data['id']))
         else:
             try:
+                csv_row.append(data['properties'][key].encode('latin-1'))
+            except AttributeError:
                 csv_row.append(str(data['properties'][key]))
             except:
                 csv_row.append('')
-    csv_row = ';'.join(csv_row)
     return csv_row
