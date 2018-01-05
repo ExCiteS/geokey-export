@@ -2,6 +2,8 @@
 
 from django.contrib.gis.geos import GEOSGeometry
 
+from geokey.categories.models import Field, LookupField, MultipleLookupField
+
 from .base import comment_keys, keys_obs
 
 
@@ -134,16 +136,24 @@ def create_observation_row(data, keys):
         elif key == 'creator':
             csv_row.append(str(data['meta']['creator']['display_name']))
         elif key == 'creator_id':
-            csv_row .append(str(data['meta']['creator']['id']))
+            csv_row.append(str(data['meta']['creator']['id']))
         elif key == 'created_at':
             csv_row.append(str(data['meta']['created_at']))
         elif key == 'id':
             csv_row.append(str(data['id']))
         else:
             try:
-                csv_row.append(data['properties'][key].encode('utf-8'))
-            except AttributeError:
-                csv_row.append(str(data['properties'][key]))
+                field = Field.objects.get(key=key, category_id=data.get('meta').get('category').get('id'))
+                value = data['properties'][key]
+                if value is not None:
+                    if isinstance(field, LookupField):
+                        value = field.lookupvalues.get(pk=value).name
+                    elif isinstance(field, MultipleLookupField):
+                        values = field.lookupvalues.filter(
+                            pk__in=value
+                        )
+                        value = ','.join([v.name for v in values])
+                csv_row.append(value.encode('utf-8'))
             except:
                 csv_row.append('')
     return csv_row
