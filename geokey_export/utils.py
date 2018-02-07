@@ -134,7 +134,10 @@ def create_observation_row(data, keys):
         elif key == 'status':
             csv_row.append(str(data['meta']['status']))
         elif key == 'creator':
-            csv_row.append(str(data['meta']['creator']['display_name']))
+            try:
+                csv_row.append(str(data['meta']['creator']['display_name']))
+            except:
+                csv_row.append(data['meta']['creator']['display_name'].encode('utf-8'))
         elif key == 'creator_id':
             csv_row.append(str(data['meta']['creator']['id']))
         elif key == 'created_at':
