@@ -19,6 +19,7 @@ Currently supported formats:
 
 - KML
 - GeoJSON
+- CSV
 
 Install
 -------

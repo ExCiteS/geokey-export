@@ -16,7 +16,7 @@ repository = join('https://github.com/ExCiteS', name)
 setup(
     name=name,
     version=version,
-    description='Export data from GeoKey to KML or GeoJSON',
+    description='Export data from GeoKey to KML, GeoJSON, CSV',
     long_description=read('README.rst'),
     url=repository,
     download_url=join(repository, 'tarball', version),
