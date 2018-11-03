@@ -67,7 +67,7 @@ class UtilsTest(TestCase):
             'updated_at': '2017-04-07 15:19:14.901174+00:00'},
             'location':
                 {
-                'geometry': u'{ "type": "Point", "coordinates": [ -3.8671875, 15.792253570362446 ] }',
+                'geometry': u'{ "type": "Point", "coordinates": [ -3.8671875, 15.79225357036245 ] }',
                 'description': None,
                 'id': 46,
                 'name': None},
@@ -158,7 +158,7 @@ class UtilsTest(TestCase):
         """Test for create_observation_row."""
         observation_txt = create_observation_row(self.data[0], self.keys)
 
-        wkt_coordinates = 'POINT (-3.8671875000000000 15.7922535703624458)'
+        wkt_coordinates = 'POINT (-3.8671875 15.79225357036245)'
         display_name = self.data[0]['meta']['creator']['display_name']
         self.assertTrue(str(self.data[0]['id']) in observation_txt)
         self.assertTrue(wkt_coordinates in observation_txt)
@@ -216,4 +216,3 @@ class UtilsTest(TestCase):
         self.assertFalse(mediafiles[0]['url'] in mediafiles_txt2)
         self.assertTrue(mediafiles[1]['file_type'] in mediafiles_txt2)
         self.assertFalse('VideoFile' in mediafiles_txt2)
-
