@@ -584,7 +584,7 @@ class ExportToRendererTest(TestCase):
     def setUp(self):
         self.view = ExportToRenderer.as_view()
         self.request = HttpRequest()
-        self.request.META['SERVER_NAME'] = 'test-server'
+        self.request.META['SERVER_NAME'] = 'localhost'
         self.request.META['SERVER_PORT'] = '80'
         self.request.method = 'GET'
         self.request.user = AnonymousUser()
